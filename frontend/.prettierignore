@@ -1,0 +1,22 @@
+# configuration
+**/package.json
+**/ng-package.json
+**/tsconfig.*.json
+package-lock.yaml
+
+# build and dev dependencies
+node_modules
+.angular
+**/dist
+**/coverage
+
+# editors
+**/.vscode
+**/.idea
+
+# tests
+**/karma.conf.js
+
+# other
+**/deploy
+**/doc
