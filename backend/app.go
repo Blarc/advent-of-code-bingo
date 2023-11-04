@@ -25,7 +25,7 @@ func (app *App) start() {
 			ClientID:     utils.GetEnvVariable("GITHUB_CLIENT_ID"),
 			ClientSecret: utils.GetEnvVariable("GITHUB_CLIENT_SECRET"),
 			Endpoint:     github.Endpoint,
-			RedirectURL:  utils.GetEnvVariable("GITHUB_REDIRECT_URL"),
+			RedirectURL:  utils.GetEnvVariable("GITHUB_REDIRECT_URI"),
 			Scopes:       nil,
 		},
 	}
@@ -38,7 +38,7 @@ func (app *App) start() {
 				AuthURL:  "https://www.reddit.com/api/v1/authorize",
 				TokenURL: "https://www.reddit.com/api/v1/access_token",
 			},
-			RedirectURL: utils.GetEnvVariable("REDDIT_REDIRECT_URL"),
+			RedirectURL: utils.GetEnvVariable("REDDIT_REDIRECT_URI"),
 			Scopes:      []string{"identity"},
 		},
 	}
@@ -48,7 +48,7 @@ func (app *App) start() {
 			ClientID:     utils.GetEnvVariable("GOOGLE_CLIENT_ID"),
 			ClientSecret: utils.GetEnvVariable("GOOGLE_CLIENT_SECRET"),
 			Endpoint:     google.Endpoint,
-			RedirectURL:  utils.GetEnvVariable("GOOGLE_REDIRECT_URL"),
+			RedirectURL:  utils.GetEnvVariable("GOOGLE_REDIRECT_URI"),
 			Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
 		},
 	}
