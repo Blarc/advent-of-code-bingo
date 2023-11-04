@@ -22,3 +22,4 @@ go.work
 variables.env
 /backend/.env
 /backend/github.json
+/backend/dev.env

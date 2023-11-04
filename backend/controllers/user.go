@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/Blarc/advent-of-code-bingo/models"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2"
 	"net/http"
 
 	"github.com/Blarc/advent-of-code-bingo/utils"
@@ -10,9 +11,8 @@ import (
 
 func LogInUserGitHub(c *gin.Context) {
 
-	code := c.Query("code")
-	accessToken := utils.GetGitHubAccessToken(code)
-	gitHubUserData := utils.GetGitHubUserData(accessToken)
+	accessToken := c.MustGet("token").(oauth2.Token)
+	gitHubUserData := utils.GetGitHubUserData(accessToken.AccessToken)
 
 	var user models.User
 	models.DB.FirstOrCreate(&user, models.User{
@@ -23,4 +23,14 @@ func LogInUserGitHub(c *gin.Context) {
 	})
 
 	c.JSON(http.StatusOK, user)
+}
+
+func LogInUserReddit(c *gin.Context) {
+	accessToken := c.MustGet("token").(oauth2.Token)
+	c.JSON(http.StatusOK, accessToken)
+}
+
+func LogInUserGoogle(c *gin.Context) {
+	accessToken := c.MustGet("token").(oauth2.Token)
+	c.JSON(http.StatusOK, accessToken)
 }
