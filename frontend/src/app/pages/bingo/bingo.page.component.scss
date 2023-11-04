@@ -1,0 +1,28 @@
+* {
+    color: white;
+}
+
+.center-container {
+    max-width: 680px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.box {
+    background: #0f0f23;
+    display: grid;
+    height: 170px;
+    max-width: 170px;
+    text-align: center;
+    place-content: center;
+    border: solid 1px white;
+    border-radius: 10px;
+    margin: 2px;
+}
+
+.box:hover {
+    transform: scale(1.1); /* Increase the size by 5% on hover */
+    cursor: pointer;
+}

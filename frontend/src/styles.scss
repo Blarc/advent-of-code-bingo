@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+@import "./assets/fonts/_source_code_pro";
+
+body {
+    font-family: "Source Code Pro", monospace;
+    height: 100vh;
+    background: radial-gradient(ellipse at bottom, #0f0f23 0%, #090a0f 100%);
+    overflow: hidden;
+}
