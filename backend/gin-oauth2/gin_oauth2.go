@@ -68,6 +68,14 @@ func (ginOauth2 *GinOAuth2) Auth() gin.HandlerFunc {
 	}
 }
 
+func (ginOauth2 *GinOAuth2) LoginRedirectHandler(ctx *gin.Context) {
+	stateValue := randToken()
+	session := sessions.Default(ctx)
+	session.Set(stateKey, stateValue)
+	session.Save()
+	ctx.Redirect(http.StatusTemporaryRedirect, ginOauth2.Config.AuthCodeURL(stateValue))
+}
+
 func (ginOauth2 *GinOAuth2) LoginHandler(ctx *gin.Context, authProviderName string) {
 	stateValue := randToken()
 	session := sessions.Default(ctx)

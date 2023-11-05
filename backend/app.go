@@ -12,6 +12,7 @@ import (
 	"golang.org/x/oauth2/google"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type App struct {
@@ -56,27 +57,30 @@ func (app *App) start() {
 	app.router.Use(sessions.Sessions("session", sessions.NewCookieStore([]byte("secret"))))
 
 	// Frontend
-	app.router.Use(static.Serve("/", static.LocalFile("../frontend/dist/frontend", false)))
+	app.router.Use(static.Serve("/", static.LocalFile("../frontend/dist/frontend", true)))
+	app.router.NoRoute(func(c *gin.Context) {
+		if !strings.HasPrefix(c.Request.RequestURI, "/api") {
+			c.File("../frontend/dist/frontend/index.html")
+		}
+		// default 404 page not found
+	})
 
 	// Public API
 	apiPublic := app.router.Group("/api/v1")
 	apiPublic.GET("/health", app.Health)
-	apiPublic.GET("/auth/github", func(context *gin.Context) {
-		githubOAuth.LoginHandler(context, "GitHub")
-	})
-	apiPublic.GET("/auth/reddit", func(context *gin.Context) {
-		redditOAuth.LoginHandler(context, "Reddit")
-	})
-	apiPublic.GET("/auth/google", func(context *gin.Context) {
-		googleOAuth.LoginHandler(context, "Google")
-	})
+	apiPublic.GET("/auth/github", githubOAuth.LoginRedirectHandler)
+	apiPublic.GET("/auth/reddit", redditOAuth.LoginRedirectHandler)
+	apiPublic.GET("/auth/google", googleOAuth.LoginRedirectHandler)
 
 	// Protected API
 	githubAuth := app.router.Group("/api/v1")
 	githubAuth.Use(githubOAuth.Auth())
-	githubAuth.GET("/auth/github/callback", controllers.LogInUserGitHub)
+	githubAuth.GET("/auth/github/callback", func(c *gin.Context) {
+		controllers.LogInUserGitHub(c, githubOAuth.Config)
+	})
 	// TODO: This goes through, because it only checks if token exists in session cookie
 	githubAuth.GET("/bingoCards", controllers.FindBingoCards)
+	githubAuth.GET("/me", controllers.FindMe)
 
 	redditAuth := app.router.Group("/api/v1")
 	redditAuth.Use(redditOAuth.Auth())
@@ -84,7 +88,9 @@ func (app *App) start() {
 
 	googleAuth := app.router.Group("/api/v1")
 	googleAuth.Use(googleOAuth.Auth())
-	googleAuth.GET("/auth/google/callback", controllers.LogInUserGoogle)
+	googleAuth.GET("/auth/google/callback", func(c *gin.Context) {
+		controllers.LogInUserGoogle(c, googleOAuth.Config)
+	})
 
 	log.Fatal(app.router.Run())
 }
