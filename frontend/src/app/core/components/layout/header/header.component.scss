@@ -1,0 +1,40 @@
+header {
+    h1 {
+        padding: 1rem;
+        font-size: 1.5rem;
+        font-weight: 300;
+        display: inline-block;
+    }
+
+    h1 a {
+        text-decoration: none;
+        color: #00cc00;
+        text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00;
+    }
+
+    h1:hover a {
+        color: #99ff99;
+        text-shadow: 0 0 2px #99ff99, 0 0 5px #99ff99;
+    }
+
+    nav {
+        display: inline-block;
+
+        ul {
+            padding: 0 1rem 0 0;
+            display: inline-block;
+            list-style-type: none;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: #009900;
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        ul li a:hover {
+            color: #99ff99;
+        }
+    }
+}

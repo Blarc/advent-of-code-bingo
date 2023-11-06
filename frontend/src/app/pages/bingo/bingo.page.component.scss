@@ -11,13 +11,12 @@
 }
 
 .box {
-    background: #0f0f23;
     display: grid;
     height: 170px;
     max-width: 170px;
     text-align: center;
     place-content: center;
-    border: solid 1px white;
+    border: solid 5px #cccccc;
     border-radius: 10px;
     margin: 2px;
 }
