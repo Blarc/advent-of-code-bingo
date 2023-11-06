@@ -54,6 +54,12 @@ func (app *App) start() {
 		},
 	}
 
+	oAuthVerifier := gin_oauth2.GinOAuth2Verifier{
+		GithubConfig: githubOAuth.Config,
+		GoogleConfig: googleOAuth.Config,
+		RedditConfig: redditOAuth.Config,
+	}
+
 	app.router.Use(sessions.Sessions("session", sessions.NewCookieStore([]byte("secret"))))
 
 	// Frontend
@@ -71,26 +77,15 @@ func (app *App) start() {
 	apiPublic.GET("/auth/github", githubOAuth.LoginRedirectHandler)
 	apiPublic.GET("/auth/reddit", redditOAuth.LoginRedirectHandler)
 	apiPublic.GET("/auth/google", googleOAuth.LoginRedirectHandler)
+	apiPublic.GET("/auth/github/callback", githubOAuth.CallbackHandler)
+	apiPublic.GET("/auth/reddit/callback", redditOAuth.CallbackHandler)
+	apiPublic.GET("/auth/google/callback", googleOAuth.CallbackHandler)
 
 	// Protected API
-	githubAuth := app.router.Group("/api/v1")
-	githubAuth.Use(githubOAuth.Auth())
-	githubAuth.GET("/auth/github/callback", func(c *gin.Context) {
-		controllers.LogInUserGitHub(c, githubOAuth.Config)
-	})
-	// TODO: This goes through, because it only checks if token exists in session cookie
-	githubAuth.GET("/bingoCards", controllers.FindBingoCards)
-	githubAuth.GET("/me", controllers.FindMe)
-
-	redditAuth := app.router.Group("/api/v1")
-	redditAuth.Use(redditOAuth.Auth())
-	redditAuth.GET("/auth/reddit/callback", controllers.LogInUserReddit)
-
-	googleAuth := app.router.Group("/api/v1")
-	googleAuth.Use(googleOAuth.Auth())
-	googleAuth.GET("/auth/google/callback", func(c *gin.Context) {
-		controllers.LogInUserGoogle(c, googleOAuth.Config)
-	})
+	auth := app.router.Group("/api/v1")
+	auth.Use(oAuthVerifier.AuthVerifier())
+	auth.GET("/me", controllers.FindMe)
+	auth.GET("/bingoCards", controllers.FindBingoCards)
 
 	log.Fatal(app.router.Run())
 }
