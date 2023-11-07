@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/Blarc/advent-of-code-bingo/auth"
 	"github.com/Blarc/advent-of-code-bingo/controllers"
-	"github.com/Blarc/advent-of-code-bingo/gin-oauth2"
 	"github.com/Blarc/advent-of-code-bingo/utils"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/contrib/sessions"
@@ -21,7 +21,7 @@ type App struct {
 
 func (app *App) start() {
 
-	githubOAuth := gin_oauth2.GinOAuth2{
+	githubOAuth := auth.OAuth{
 		Config: &oauth2.Config{
 			ClientID:     utils.GetEnvVariable("GITHUB_CLIENT_ID"),
 			ClientSecret: utils.GetEnvVariable("GITHUB_CLIENT_SECRET"),
@@ -31,20 +31,22 @@ func (app *App) start() {
 		},
 	}
 
-	redditOAuth := gin_oauth2.GinOAuth2{
+	redditOAuth := auth.OAuth{
 		Config: &oauth2.Config{
 			ClientID:     utils.GetEnvVariable("REDDIT_CLIENT_ID"),
 			ClientSecret: utils.GetEnvVariable("REDDIT_CLIENT_SECRET"),
 			Endpoint: oauth2.Endpoint{
-				AuthURL:  "https://www.reddit.com/api/v1/authorize",
-				TokenURL: "https://www.reddit.com/api/v1/access_token",
+				AuthURL:   "https://www.reddit.com/api/v1/authorize",
+				TokenURL:  "https://www.reddit.com/api/v1/access_token",
+				AuthStyle: oauth2.AuthStyleInHeader,
 			},
 			RedirectURL: utils.GetEnvVariable("REDDIT_REDIRECT_URI"),
 			Scopes:      []string{"identity"},
 		},
+		UserAgent: "aoc-bingo-localhost by Bl4rc",
 	}
 
-	googleOAuth := gin_oauth2.GinOAuth2{
+	googleOAuth := auth.OAuth{
 		Config: &oauth2.Config{
 			ClientID:     utils.GetEnvVariable("GOOGLE_CLIENT_ID"),
 			ClientSecret: utils.GetEnvVariable("GOOGLE_CLIENT_SECRET"),
@@ -54,7 +56,7 @@ func (app *App) start() {
 		},
 	}
 
-	oAuthVerifier := gin_oauth2.GinOAuth2Verifier{
+	oAuthVerifier := auth.Verifier{
 		GithubConfig: githubOAuth.Config,
 		GoogleConfig: googleOAuth.Config,
 		RedditConfig: redditOAuth.Config,
@@ -91,5 +93,7 @@ func (app *App) start() {
 }
 
 func (app *App) Health(c *gin.Context) {
+	log.Printf("%v\n", c.Request)
+	log.Println(c.Request.Cookies())
 	c.String(http.StatusOK, "OK")
 }
