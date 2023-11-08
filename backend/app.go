@@ -31,6 +31,16 @@ func (app *App) start() {
 		},
 	}
 
+	googleOAuth := auth.OAuth{
+		Config: &oauth2.Config{
+			ClientID:     utils.GetEnvVariable("GOOGLE_CLIENT_ID"),
+			ClientSecret: utils.GetEnvVariable("GOOGLE_CLIENT_SECRET"),
+			Endpoint:     google.Endpoint,
+			RedirectURL:  utils.GetEnvVariable("GOOGLE_REDIRECT_URI"),
+			Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile"},
+		},
+	}
+
 	redditOAuth := auth.OAuth{
 		Config: &oauth2.Config{
 			ClientID:     utils.GetEnvVariable("REDDIT_CLIENT_ID"),
@@ -43,23 +53,7 @@ func (app *App) start() {
 			RedirectURL: utils.GetEnvVariable("REDDIT_REDIRECT_URI"),
 			Scopes:      []string{"identity"},
 		},
-		UserAgent: "aoc-bingo-localhost by Bl4rc",
-	}
-
-	googleOAuth := auth.OAuth{
-		Config: &oauth2.Config{
-			ClientID:     utils.GetEnvVariable("GOOGLE_CLIENT_ID"),
-			ClientSecret: utils.GetEnvVariable("GOOGLE_CLIENT_SECRET"),
-			Endpoint:     google.Endpoint,
-			RedirectURL:  utils.GetEnvVariable("GOOGLE_REDIRECT_URI"),
-			Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
-		},
-	}
-
-	oAuthVerifier := auth.Verifier{
-		GithubConfig: githubOAuth.Config,
-		GoogleConfig: googleOAuth.Config,
-		RedditConfig: redditOAuth.Config,
+		UserAgent: utils.GetEnvVariable("REDDIT_USER_AGENT"),
 	}
 
 	app.router.Use(sessions.Sessions("session", sessions.NewCookieStore([]byte("secret"))))
@@ -77,17 +71,23 @@ func (app *App) start() {
 	apiPublic := app.router.Group("/api/v1")
 	apiPublic.GET("/health", app.Health)
 	apiPublic.GET("/auth/github", githubOAuth.LoginRedirectHandler)
-	apiPublic.GET("/auth/reddit", redditOAuth.LoginRedirectHandler)
+	apiPublic.GET("/auth/github/callback", func(context *gin.Context) {
+		auth.GithubCallbackHandler(context, &githubOAuth)
+	})
 	apiPublic.GET("/auth/google", googleOAuth.LoginRedirectHandler)
-	apiPublic.GET("/auth/github/callback", githubOAuth.CallbackHandler)
-	apiPublic.GET("/auth/reddit/callback", redditOAuth.CallbackHandler)
-	apiPublic.GET("/auth/google/callback", googleOAuth.CallbackHandler)
+	apiPublic.GET("/auth/google/callback", func(context *gin.Context) {
+		auth.GoogleCallbackHandler(context, &googleOAuth)
+	})
+	apiPublic.GET("/auth/reddit", redditOAuth.LoginRedirectHandler)
+	apiPublic.GET("/auth/reddit/callback", func(context *gin.Context) {
+		auth.RedditCallbackHandler(context, &redditOAuth)
+	})
 
 	// Protected API
-	auth := app.router.Group("/api/v1")
-	auth.Use(oAuthVerifier.AuthVerifier())
-	auth.GET("/me", controllers.FindMe)
-	auth.GET("/bingoCards", controllers.FindBingoCards)
+	protected := app.router.Group("/api/v1")
+	protected.Use(auth.Verifier())
+	protected.GET("/me", controllers.FindMe)
+	protected.GET("/bingoCards", controllers.FindBingoCards)
 
 	log.Fatal(app.router.Run())
 }

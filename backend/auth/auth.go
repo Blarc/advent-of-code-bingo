@@ -2,26 +2,32 @@ package auth
 
 import (
 	"context"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"github.com/Blarc/advent-of-code-bingo/models"
+	"github.com/Blarc/advent-of-code-bingo/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/go-github/v56/github"
+	"github.com/google/uuid"
 	"golang.org/x/oauth2"
 	goauth "google.golang.org/api/oauth2/v2"
 	"google.golang.org/api/option"
+	"io"
 	"log"
 	"math"
 	"net/http"
-	"strings"
+	"strconv"
 	"time"
 )
 
 const (
 	stateCookieId = "oauth_state"
-	tokenCookieId = "oauth_token"
+	tokenCookieId = "token"
 )
 
 type OAuth struct {
@@ -39,7 +45,7 @@ func (o *OAuth) LoginRedirectHandler(ctx *gin.Context) {
 	ctx.Redirect(http.StatusTemporaryRedirect, url)
 }
 
-func (o *OAuth) CallbackHandler(ctx *gin.Context) {
+func (o *OAuth) GetToken(ctx *gin.Context) *oauth2.Token {
 	// Read oauthState from Cookie
 	oauthState, _ := ctx.Cookie(stateCookieId)
 
@@ -51,7 +57,7 @@ func (o *OAuth) CallbackHandler(ctx *gin.Context) {
 	if ctx.Query("state") != oauthState {
 		log.Println("Invalid oauth state.")
 		ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s.", oauthState))
-		return
+		return nil
 	}
 
 	ctx2 := context.TODO()
@@ -66,16 +72,135 @@ func (o *OAuth) CallbackHandler(ctx *gin.Context) {
 	log.Println("Exchanging code for token")
 	token, err := o.Config.Exchange(ctx2, ctx.Query("code"))
 	if err != nil {
-		ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("Failed to exchange code for oauth token: %w.", err))
+		ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Failed to exchange code for oauth token: %w.", err))
+		return nil
+	}
+	return token
+}
+
+func GithubCallbackHandler(ctx *gin.Context, config *OAuth) {
+	token := config.GetToken(ctx)
+
+	client := github.NewClient(config.Config.Client(context.TODO(), token))
+	githubUserData, _, err := client.Users.Get(context.TODO(), "")
+	if err != nil {
+		ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Failed to get user: %v", err))
+		return
+	}
+	githubId := strconv.FormatInt(*githubUserData.ID, 10)
+
+	var user models.User
+	result := models.DB.Where(models.User{GithubID: githubId}).Assign(models.User{
+		GithubID:  githubId,
+		Name:      *githubUserData.Name,
+		AvatarURL: *githubUserData.AvatarURL,
+		GithubURL: *githubUserData.HTMLURL,
+	}).FirstOrCreate(&user)
+
+	if result.Error != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to create user: %v", result.Error))
 		return
 	}
 
-	age := int(token.Expiry.Sub(time.Now()).Minutes())
-	if age < 0 {
-		age = math.MaxInt32
+	encryptedUuid, err := encrypt(user.ID.String())
+	if err != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to encrypt user id: %v", err))
+		return
+	}
+	ctx.SetCookie(tokenCookieId, encryptedUuid, math.MaxInt32, "/", ctx.Request.Host, true, false)
+	ctx.Redirect(http.StatusTemporaryRedirect, "/")
+}
+
+func GoogleCallbackHandler(ctx *gin.Context, config *OAuth) {
+	token := config.GetToken(ctx)
+
+	service, err := goauth.NewService(ctx, option.WithTokenSource(config.Config.TokenSource(ctx, token)))
+	if err != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
-	ctx.SetCookie(tokenCookieId, token.AccessToken, age, "/", ctx.Request.Host, true, false)
+	googleUserData, err := service.Userinfo.Get().Do()
+	if err != nil {
+		ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Failed to get user: %v", err))
+		return
+	}
+
+	var user models.User
+	result := models.DB.Where(models.User{GoogleID: googleUserData.Id}).Assign(models.User{
+		GoogleID:  googleUserData.Id,
+		Name:      googleUserData.Name,
+		AvatarURL: googleUserData.Picture,
+	}).FirstOrCreate(&user)
+
+	if result.Error != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to create user: %v", result.Error))
+		return
+	}
+
+	encryptedUuid, err := encrypt(user.ID.String())
+	if err != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to encrypt user id: %v", err))
+		return
+	}
+	ctx.SetCookie(tokenCookieId, encryptedUuid, math.MaxInt32, "/", ctx.Request.Host, true, false)
+	ctx.Redirect(http.StatusTemporaryRedirect, "/")
+}
+
+func RedditCallbackHandler(ctx *gin.Context, config *OAuth) {
+	token := config.GetToken(ctx)
+
+	log.Println(token.AccessToken)
+
+	req, err := http.NewRequest("GET", "https://oauth.reddit.com/api/v1/me", nil)
+	if err != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to create request: %v", err))
+		return
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
+	req.Header.Set("User-Agent", config.UserAgent)
+
+	response, err := http.DefaultClient.Do(req)
+	if err != nil {
+		ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Failed to get user: %v", err))
+		return
+	}
+
+	type RedditSubredditData struct {
+		Url string `json:"url"`
+	}
+
+	type RedditUserData struct {
+		ID        string              `json:"id"`
+		Name      string              `json:"name"`
+		IconImg   string              `json:"icon_img"`
+		Subreddit RedditSubredditData `json:"subreddit"`
+	}
+
+	redditUserDataRaw, err := io.ReadAll(response.Body)
+	var redditUserData RedditUserData
+	json.Unmarshal(redditUserDataRaw, &redditUserData)
+
+	var user models.User
+	result := models.DB.Where(models.User{RedditID: redditUserData.ID}).Assign(models.User{
+		RedditID:  redditUserData.ID,
+		Name:      redditUserData.Name,
+		AvatarURL: redditUserData.IconImg,
+		RedditURL: "https://www.reddit.com" + redditUserData.Subreddit.Url,
+	}).FirstOrCreate(&user)
+
+	if result.Error != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to create user: %v", result.Error))
+		return
+	}
+
+	encryptedUuid, err := encrypt(user.ID.String())
+	if err != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to encrypt user id: %v", err))
+		return
+	}
+	ctx.SetCookie(tokenCookieId, encryptedUuid, math.MaxInt32, "/", ctx.Request.Host, true, false)
 	ctx.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
@@ -134,13 +259,7 @@ func setUserAgentHeader(req *http.Request, userAgent string) *http.Request {
 	return convertedRequest
 }
 
-type Verifier struct {
-	GithubConfig *oauth2.Config
-	GoogleConfig *oauth2.Config
-	RedditConfig *oauth2.Config
-}
-
-func (v *Verifier) AuthVerifier() gin.HandlerFunc {
+func Verifier() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		header := ctx.GetHeader("Authorization")
 		if header == "" {
@@ -148,55 +267,85 @@ func (v *Verifier) AuthVerifier() gin.HandlerFunc {
 			return
 		}
 
-		token := header[len("Bearer "):]
-		if token == "" {
+		encryptedUuid := header[len("Bearer "):]
+		if encryptedUuid == "" {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
-		oauth2Token := oauth2.Token{
-			AccessToken: token,
-			TokenType:   "Bearer",
+		decryptedUuid, decryptionErr := decrypt(encryptedUuid)
+		if decryptionErr != nil {
+			ctx.AbortWithStatus(http.StatusUnauthorized)
+			log.Printf("Failed to decrypt token: %v\n", decryptionErr)
+			return
 		}
 
-		if strings.HasPrefix(token, "gho_") {
-			// Github token
-			// https://docs.github.com/en/rest/apps/oauth-applications?apiVersion=2022-11-28#check-a-token
-			basicAuthTransport := github.BasicAuthTransport{
-				Username: v.GithubConfig.ClientID,
-				Password: v.GithubConfig.ClientSecret,
-			}
-			githubClient := github.NewClient(basicAuthTransport.Client())
-
-			tokenInfo, _, err := githubClient.Authorizations.Check(ctx, v.GithubConfig.ClientID, token)
-			if err != nil {
-				println(err.Error())
-				ctx.AbortWithStatus(http.StatusUnauthorized)
-				return
-			}
-			s, _ := json.MarshalIndent(tokenInfo, "", "  ")
-			log.Printf("Token info: %s\n", string(s))
-
-		} else if strings.HasPrefix(token, "ya29.") {
-			// Google token
-			oAuth2Service, err := goauth.NewService(ctx, option.WithTokenSource(v.GoogleConfig.TokenSource(ctx, &oauth2Token)))
-			if err != nil {
-				ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to create oauth service: %w", err))
-				return
-			}
-
-			tokenInfo, err := oAuth2Service.Tokeninfo().Do()
-			if err != nil {
-				ctx.AbortWithStatus(http.StatusUnauthorized)
-				return
-			}
-
-			s, _ := json.MarshalIndent(tokenInfo, "", "  ")
-			log.Printf("Token info: %s\n", string(s))
-			ctx.Next()
-
-		} else {
-			// JWT
+		userUuid, err := uuid.Parse(decryptedUuid)
+		if err != nil {
+			ctx.AbortWithStatus(http.StatusUnauthorized)
+			log.Printf("Failed to create UUID from string: %v\n", err)
+			return
 		}
+
+		log.Printf("Searching for user with id %s\n", userUuid)
+		var user models.User
+		result := models.DB.First(&user, "id = ?", userUuid)
+		if result.Error != nil {
+			ctx.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		log.Printf("User successfully logged in: %+v\n", user)
+		ctx.Next()
 	}
+}
+
+func encrypt(plainData string) (string, error) {
+	cipherBlock, err := aes.NewCipher([]byte(utils.GetEnvVariable("TOKEN_ENCRYPT_SECRET")))
+	if err != nil {
+		return "", err
+	}
+
+	aead, err := cipher.NewGCM(cipherBlock)
+	if err != nil {
+		return "", err
+	}
+
+	nonce := make([]byte, aead.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		return "", err
+	}
+
+	return base64.URLEncoding.EncodeToString(aead.Seal(nonce, nonce, []byte(plainData), nil)), nil
+}
+
+// decrypt decrypts encrypt string with a secret key and returns plain string.
+func decrypt(encodedData string) (string, error) {
+	encryptData, err := base64.URLEncoding.DecodeString(encodedData)
+	if err != nil {
+		return "", err
+	}
+
+	cipherBlock, err := aes.NewCipher([]byte(utils.GetEnvVariable("TOKEN_ENCRYPT_SECRET")))
+	if err != nil {
+		return "", err
+	}
+
+	aead, err := cipher.NewGCM(cipherBlock)
+	if err != nil {
+		return "", err
+	}
+
+	nonceSize := aead.NonceSize()
+	if len(encryptData) < nonceSize {
+		return "", err
+	}
+
+	nonce, cipherText := encryptData[:nonceSize], encryptData[nonceSize:]
+	plainData, err := aead.Open(nil, nonce, cipherText, nil)
+	if err != nil {
+		return "", err
+	}
+
+	return string(plainData), nil
 }

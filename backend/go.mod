@@ -6,8 +6,8 @@ require (
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/contrib v0.0.0-20221130124618-7e01895a63f2
 	github.com/gin-gonic/gin v1.9.1
-	github.com/golang/glog v1.1.2
 	github.com/google/go-github/v56 v56.0.0
+	github.com/google/uuid v1.4.0
 	github.com/joho/godotenv v1.5.1
 	golang.org/x/oauth2 v0.13.0
 	google.golang.org/api v0.149.0
@@ -32,7 +32,6 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
-	github.com/google/uuid v1.4.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
