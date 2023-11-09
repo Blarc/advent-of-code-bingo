@@ -289,13 +289,14 @@ func Verifier() gin.HandlerFunc {
 
 		log.Printf("Searching for user with id %s\n", userUuid)
 		var user models.User
-		result := models.DB.First(&user, "id = ?", userUuid)
+		result := models.DB.Preload("BingoCards").First(&user, "id = ?", userUuid)
 		if result.Error != nil {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
 		log.Printf("User successfully logged in: %+v\n", user)
+		ctx.Set("user", user)
 		ctx.Next()
 	}
 }

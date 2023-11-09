@@ -21,7 +21,18 @@
     margin: 2px;
 }
 
-.box:hover {
+.box:hover, .box-yellow:hover {
     transform: scale(1.1); /* Increase the size by 5% on hover */
     cursor: pointer;
+}
+
+.box-yellow {
+    display: grid;
+    height: 170px;
+    max-width: 170px;
+    text-align: center;
+    place-content: center;
+    border: solid 5px #fff84d;
+    border-radius: 10px;
+    margin: 2px;
 }

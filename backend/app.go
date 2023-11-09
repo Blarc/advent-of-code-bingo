@@ -5,7 +5,6 @@ import (
 	"github.com/Blarc/advent-of-code-bingo/controllers"
 	"github.com/Blarc/advent-of-code-bingo/utils"
 	"github.com/gin-contrib/static"
-	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
@@ -17,6 +16,22 @@ import (
 
 type App struct {
 	router *gin.Engine
+}
+
+func CORS() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
 
 func (app *App) start() {
@@ -56,7 +71,7 @@ func (app *App) start() {
 		UserAgent: utils.GetEnvVariable("REDDIT_USER_AGENT"),
 	}
 
-	app.router.Use(sessions.Sessions("session", sessions.NewCookieStore([]byte("secret"))))
+	app.router.Use(CORS())
 
 	// Frontend
 	app.router.Use(static.Serve("/", static.LocalFile("../frontend/dist/frontend", true)))
@@ -82,12 +97,13 @@ func (app *App) start() {
 	apiPublic.GET("/auth/reddit/callback", func(context *gin.Context) {
 		auth.RedditCallbackHandler(context, &redditOAuth)
 	})
+	apiPublic.GET("/bingoCards", controllers.FindBingoCards)
 
 	// Protected API
 	protected := app.router.Group("/api/v1")
 	protected.Use(auth.Verifier())
 	protected.GET("/me", controllers.FindMe)
-	protected.GET("/bingoCards", controllers.FindBingoCards)
+	protected.POST("/me/bingoCard/:id", controllers.ClickBingoCard)
 
 	log.Fatal(app.router.Run())
 }

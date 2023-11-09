@@ -3,9 +3,8 @@ package controllers
 import (
 	"encoding/gob"
 	"github.com/Blarc/advent-of-code-bingo/models"
-	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/oauth2"
+	"log"
 	"net/http"
 )
 
@@ -13,76 +12,47 @@ func init() {
 	gob.Register(models.User{})
 }
 
-func LogInUserGitHub(c *gin.Context, conf *oauth2.Config) {
-
-	accessToken := c.MustGet("token").(oauth2.Token)
-	//githubClient := github.NewClient(conf.Client(c, &accessToken))
-	//githubUserData, _, err := githubClient.Users.Get(c, "")
-	//if err != nil {
-	//	return
-	//}
-	//
-	//var user models.User
-	//models.DB.FirstOrCreate(&user, models.User{
-	//	OAuthID:   *githubUserData.ID,
-	//	Name:      *githubUserData.Name,
-	//	AvatarURL: *githubUserData.AvatarURL,
-	//	GitHubURL: *githubUserData.HTMLURL,
-	//})
-	//
-	//log.Printf("Saving user to session: %v", user)
-	//session := sessions.Default(c)
-	//session.Set("user", user)
-	//if err := session.Save(); err != nil {
-	//	log.Printf("Failed to save session: %v", err)
-	//	c.AbortWithError(http.StatusInternalServerError, err)
-	//	return
-	//}
-	//c.Redirect(http.StatusMovedPermanently, "/login")
-	c.JSON(http.StatusOK, accessToken)
-}
-
-func LogInUserReddit(c *gin.Context) {
-	accessToken := c.MustGet("token").(oauth2.Token)
-	//c.Redirect(http.StatusMovedPermanently, "/login")
-	c.JSON(http.StatusOK, accessToken)
-}
-
-func LogInUserGoogle(c *gin.Context, conf *oauth2.Config) {
-	accessToken := c.MustGet("token").(oauth2.Token)
-
-	//googleService, err := goauth.NewService(c, option.WithTokenSource(conf.TokenSource(c, &accessToken)))
-	//if err != nil {
-	//	log.Printf("Failed to create oauth service: %v", err)
-	//	c.AbortWithError(http.StatusInternalServerError, err)
-	//	return
-	//}
-	//
-	//userInfo, err := googleService.Userinfo.Get().Do()
-	//if err != nil {
-	//	log.Printf("Failed to get userinfo for user: %v", err)
-	//	c.AbortWithError(http.StatusInternalServerError, err)
-	//	return
-	//}
-	//
-	//var user models.User
-	//models.DB.FirstOrCreate(&user, models.User{
-	//	Name:      userInfo.Name,
-	//	AvatarURL: userInfo.Picture,
-	//})
-	//
-	//log.Printf("Saving user to session: %v", user)
-	//session := sessions.Default(c)
-	//session.Set("user", user)
-	//if err := session.Save(); err != nil {
-	//	log.Printf("Failed to save session: %v", err)
-	//	c.AbortWithError(http.StatusInternalServerError, err)
-	//	return
-	//}
-	//c.Redirect(http.StatusMovedPermanently, "/login")
-	c.JSON(http.StatusOK, accessToken)
-}
-
 func FindMe(c *gin.Context) {
-	c.JSON(http.StatusOK, sessions.Default(c).Get("user"))
+	c.JSON(http.StatusOK, c.MustGet("user"))
+}
+
+type BingoCardId struct {
+	ID uint `uri:"id" binding:"required"`
+}
+
+func ClickBingoCard(c *gin.Context) {
+
+	var bingoCardId BingoCardId
+	if err := c.ShouldBindUri(&bingoCardId); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var bingoCard models.BingoCard
+	if err := models.DB.First(&bingoCard, bingoCardId.ID).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user = c.MustGet("user").(models.User)
+	for _, bingoCard := range user.BingoCards {
+		if bingoCard.ID == bingoCardId.ID {
+			log.Printf("bingo card %d already clicked", bingoCardId.ID)
+			err := models.DB.Model(&user).Association("BingoCards").Delete(&bingoCard)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			}
+			c.JSON(http.StatusOK, user)
+			return
+		}
+	}
+
+	err := models.DB.Model(&user).Association("BingoCards").Append(&bingoCard)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }

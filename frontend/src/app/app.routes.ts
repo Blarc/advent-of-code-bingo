@@ -12,7 +12,7 @@ export const appRoutes: Routes = [
         component: HeaderComponent,
         children: [
             {
-                path: 'bingo',
+                path: '',
                 component: BingoPageComponent
             },
             {
