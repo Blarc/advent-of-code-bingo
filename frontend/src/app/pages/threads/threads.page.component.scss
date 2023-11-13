@@ -1,0 +1,33 @@
+.add-new-btn {
+    padding: 0;
+    text-decoration: none;
+    color: #009900;
+}
+
+.add-new-btn:hover {
+    text-decoration: none;
+    color: #99ff99;
+}
+
+.card {
+    background-color: transparent;
+    border: 1px solid #009900;
+    color: white;
+
+    .btn-outline-light {
+        border: solid 2px white;
+    }
+
+    .vote-number {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .thread-text {
+        display: flex;
+        align-items: center;
+    }
+}
+

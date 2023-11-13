@@ -1,1 +1,22 @@
-Welcome to threads
+<div class='col-sm-11 col-lg-8 mx-auto mt-5'>
+    <button class='btn btn-link add-new-btn mb-5'>
+        [Add new]
+    </button>
+
+    <div class="card mt-3">
+        <div class="card-body row">
+            <div class='col-3 col-xl-2 row'>
+                <button type="button" class="btn btn-outline-light col-sm-3 col-md-3" (click)='upVote()'>
+                    <em class="bi bi-arrow-up"></em>
+                </button>
+                <h2 class='vote-number col-sm-6 col-md-6'>{{ voteCounter }}</h2>
+                <button type="button" class="btn btn-outline-light col-sm-3 col-md-3" (click)='downVote()'>
+                    <em class="bi bi-arrow-down"></em>
+                </button>
+            </div>
+            <div class='col-9'>
+                <h5 class='thread-text'>You realize the puzzle is much easier to solve by hand than with code.</h5>
+            </div>
+        </div>
+    </div>
+</div>
