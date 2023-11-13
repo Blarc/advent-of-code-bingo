@@ -1,34 +1,6 @@
-<!--    TODO: Fix me. Cannot read properties of undefined, because this tries to render before bingoCards are loaded. -->
-<!--<div class="container center-container" *ngIf="bingoCards!!">-->
-<!--    <div class="row" *ngFor="let r of [].constructor(4); let row = index">-->
-<!--        <div class="col" [ngClass]="userHasBingoCardClass(bingoCards[row * 4 + col].id)" *ngFor="let c of [].constructor(4); let col = index" (click)="clickBingoCard(bingoCards[row * 4 + col].id)">-->
-<!--            {{row * 4 + col}}:{{bingoCards[row * 4 + col].description}}-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-<div class="container center-container">
-    <div class="row">
-        <div class="box col">[Help a co-worker with a problem]</div>
-        <div class="box col">[Refactor code from an earlier day]</div>
-        <div class="box col">[Solve a problem using pair programming]</div>
-        <div class="box col">[Attend an AoC-event at work]</div>
-    </div>
-    <div class="row">
-        <div class="box col">[Finish 10 days]</div>
-        <div class="box col">[Solve a task before 8 am.]</div>
-        <div class="box col">[Create a GitHub repository for your solutions]</div>
-        <div class="box col">[Discuss a solution during lunch break]</div>
-    </div>
-    <div class="row">
-        <div class="box col">[Share an AoC-meme with a co-worker]</div>
-        <div class="box col">[Solve a problem after day 10]</div>
-        <div class="box col">[Finish 15 days]</div>
-        <div class="box col">[Receive help from a co-worker]</div>
-    </div>
-    <div class="row">
-        <div class="box col">[Use test-driven development to solve a task]</div>
-        <div class="box col">[Finish 5 days]</div>
-        <div class="box col">[Recruit a co-worker to AoC]</div>
-        <div class="box col">[Use the same help function on two different problems]</div>
+<div class="bingo-grid">
+    <div class="bingo-item-wrapper" *ngFor='let card of (bingoCardsSubject | async)'>
+        <div [ngClass]='card.selected ?  "bingo-item selected" : "bingo-item"' (click)='clickBingoCard(card.id)'>{{card.description}}</div>
+        <small>{{ card | userCount }}</small>
     </div>
 </div>

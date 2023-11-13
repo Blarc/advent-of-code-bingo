@@ -1,5 +1,5 @@
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 
 import {Observable} from 'rxjs';
 
@@ -10,18 +10,33 @@ import {UserDto} from '../model/userDto';
 @Injectable({
     providedIn: 'root'
 })
-export class ApiService {
+export class BingoApiService {
+    private http = inject(HttpClient);
+    private cookiesService = inject(CookiesService);
+
     private readonly baseUrl: string;
 
-    constructor(
-        private http: HttpClient,
-        private cookiesService: CookiesService
-    ) {
+    constructor() {
         this.baseUrl = 'http://localhost:8080/api/v1';
     }
 
     public getAllBingoCards(): Observable<BingoCardDto[]> {
+        if (this.cookiesService.getCookie('token')) {
+            const headers = new HttpHeaders({
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${decodeURIComponent(this.cookiesService.getCookie('token'))}`
+            });
+            return this.http.get<BingoCardDto[]>(`${this.baseUrl}/bingoCards`, {headers: headers});
+        }
         return this.http.get<BingoCardDto[]>(`${this.baseUrl}/bingoCards`);
+    }
+
+    public getUserInfo(): Observable<UserDto> {
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${decodeURIComponent(this.cookiesService.getCookie('token'))}`
+        });
+        return this.http.get<UserDto>(`${this.baseUrl}/me`, {headers: headers});
     }
 
     public clickBingoCard(id: number): Observable<UserDto> {

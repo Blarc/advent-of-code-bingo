@@ -26,11 +26,15 @@ header {
             list-style-type: none;
         }
 
-        ul li a {
-            text-decoration: none;
-            color: #009900;
-            font-size: 1rem;
-            font-weight: 300;
+        ul li {
+            color: white;
+
+            a {
+                text-decoration: none;
+                color: #009900;
+                font-size: 1rem;
+                font-weight: 300;
+            }
         }
 
         ul li a:hover {
