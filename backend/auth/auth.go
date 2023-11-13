@@ -261,29 +261,9 @@ func setUserAgentHeader(req *http.Request, userAgent string) *http.Request {
 
 func Verifier() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		header := ctx.GetHeader("Authorization")
-		if header == "" {
+		userUuid := GetUserUuidFromHeader(ctx)
+		if userUuid == nil {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		encryptedUuid := header[len("Bearer "):]
-		if encryptedUuid == "" {
-			ctx.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		decryptedUuid, decryptionErr := decrypt(encryptedUuid)
-		if decryptionErr != nil {
-			ctx.AbortWithStatus(http.StatusUnauthorized)
-			log.Printf("Failed to decrypt token: %v\n", decryptionErr)
-			return
-		}
-
-		userUuid, err := uuid.Parse(decryptedUuid)
-		if err != nil {
-			ctx.AbortWithStatus(http.StatusUnauthorized)
-			log.Printf("Failed to create UUID from string: %v\n", err)
 			return
 		}
 
@@ -299,6 +279,32 @@ func Verifier() gin.HandlerFunc {
 		ctx.Set("user", user)
 		ctx.Next()
 	}
+}
+
+func GetUserUuidFromHeader(ctx *gin.Context) *uuid.UUID {
+	header := ctx.GetHeader("Authorization")
+	if header == "" {
+		return nil
+	}
+
+	encryptedUuid := header[len("Bearer "):]
+	if encryptedUuid == "" {
+		return nil
+	}
+
+	decryptedUuid, decryptionErr := decrypt(encryptedUuid)
+	if decryptionErr != nil {
+		log.Printf("Failed to decrypt token: %v\n", decryptionErr)
+		return nil
+	}
+
+	userUuid, err := uuid.Parse(decryptedUuid)
+	if err != nil {
+		log.Printf("Failed to create UUID from string: %v\n", err)
+		return nil
+	}
+
+	return &userUuid
 }
 
 func encrypt(plainData string) (string, error) {
