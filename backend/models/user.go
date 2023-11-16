@@ -15,5 +15,28 @@ type User struct {
 	Name       string      `gorm:"size:255" json:"name"`
 	GithubURL  string      `gorm:"size:255" json:"github_url"`
 	RedditURL  string      `gorm:"size:255" json:"reddit_url"`
-	BingoCards []BingoCard `gorm:"many2many:user_bingo_cards;" json:"bingo_cards"`
+	BingoCards []BingoCard `gorm:"many2many:user_bingo_card;" json:"bingo_cards"`
+}
+
+type UserDto struct {
+	Name         string         `json:"name"`
+	AvatarURL    string         `json:"avatar_url"`
+	GithubURL    string         `json:"github_url"`
+	RedditURL    string         `json:"reddit_url"`
+	BingoCardDto []BingoCardDto `json:"bingo_cards"`
+}
+
+func (u *User) MapToDto() UserDto {
+	var bingoCardDtos []BingoCardDto
+	for _, bingoCard := range u.BingoCards {
+		bingoCardDtos = append(bingoCardDtos, bingoCard.MapToDto())
+	}
+
+	return UserDto{
+		Name:         u.Name,
+		AvatarURL:    u.AvatarURL,
+		GithubURL:    u.GithubURL,
+		RedditURL:    u.RedditURL,
+		BingoCardDto: bingoCardDtos,
+	}
 }

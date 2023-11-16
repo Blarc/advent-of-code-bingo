@@ -1,0 +1,103 @@
+basePath: /api/v1
+definitions:
+  models.BingoCardDto:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      selected:
+        type: boolean
+      user_count:
+        type: integer
+    type: object
+  models.UserDto:
+    properties:
+      avatar_url:
+        type: string
+      bingo_cards:
+        items:
+          $ref: '#/definitions/models.BingoCardDto'
+        type: array
+      github_url:
+        type: string
+      name:
+        type: string
+      reddit_url:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: Jakob Maležič
+    url: https://github.com/Blarc
+  description: Advent of Code Bingo API in Go using Gin framework.
+  license:
+    name: GNU General Public License v3.0
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+  title: Advent of Code Bingo API
+  version: "1.0"
+paths:
+  /bingoCards:
+    get:
+      consumes:
+      - application/json
+      description: Get all bingo cards.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.BingoCardDto'
+            type: array
+      summary: Get all bingo cards.
+      tags:
+      - Bingo Card
+  /me:
+    get:
+      consumes:
+      - application/json
+      description: Get information about the user that is currently logged in.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserDto'
+      security:
+      - Token: []
+      summary: Get user information.
+      tags:
+      - User
+  /me/bingoCard/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Add or remove bingo card from user.
+      parameters:
+      - description: Bingo Card ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserDto'
+      security:
+      - Token: []
+      summary: Click bingo card.
+      tags:
+      - User
+securityDefinitions:
+  Token:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

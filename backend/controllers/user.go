@@ -12,14 +12,37 @@ func init() {
 	gob.Register(models.User{})
 }
 
+// FindMe godoc
+// @Summary Get user information.
+// @Schemes http
+// @Description Get information about the user that is currently logged in.
+// @Tags User
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.UserDto
+// @Router /me [get]
+// @Security Token
 func FindMe(c *gin.Context) {
-	c.JSON(http.StatusOK, c.MustGet("user"))
+	user := c.MustGet("user").(models.User)
+	log.Printf("user: %+v", user)
+	c.JSON(http.StatusOK, user.MapToDto())
 }
 
 type BingoCardId struct {
 	ID uint `uri:"id" binding:"required"`
 }
 
+// ClickBingoCard godoc
+// @Summary Click bingo card.
+// @Schemes http
+// @Description Add or remove bingo card from user.
+// @Tags User
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.UserDto
+// @Router /me/bingoCard/{id} [post]
+// @Param id path int true "Bingo Card ID"
+// @Security Token
 func ClickBingoCard(c *gin.Context) {
 
 	var bingoCardId BingoCardId
@@ -54,5 +77,5 @@ func ClickBingoCard(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, user.MapToDto())
 }
