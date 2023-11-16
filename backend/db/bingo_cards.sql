@@ -1,0 +1,16 @@
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (1, null, null, null, 'Attend an AoC event at work.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (2, null, null, null, 'Solve a problem after day 10.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (3, null, null, null, 'Solve a task before 8 am.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (4, null, null, null, 'Use test driven development to solve a task.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (5, null, null, null, 'Refactor code from and earlier day.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (6, null, null, null, 'Finish 15 days.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (7, null, null, null, 'Share an AoC meme with a co-worker.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (8, null, null, null, 'Solve a problem using pair programming.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (9, null, null, null, 'Receive help from a co-worker.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (10, null, null, null, 'Recruit a co-worker to AoC.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (11, null, null, null, 'Finish 10 days.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (12, null, null, null, 'Finish 5 days.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (13, null, null, null, 'Create GitHub repository for your solutions.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (14, null, null, null, 'Help a co-worker with a problem.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (15, null, null, null, 'Discuss a solution during lunch break.');
+INSERT INTO public.bingo_cards (id, created_at, updated_at, deleted_at, description) VALUES (16, null, null, null, 'Use the same help-function on two different problems.');

@@ -3,9 +3,12 @@ package main
 import (
 	"github.com/Blarc/advent-of-code-bingo/auth"
 	"github.com/Blarc/advent-of-code-bingo/controllers"
+	_ "github.com/Blarc/advent-of-code-bingo/docs"
 	"github.com/Blarc/advent-of-code-bingo/utils"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/google"
@@ -84,6 +87,7 @@ func (app *App) start() {
 
 	// Public API
 	apiPublic := app.router.Group("/api/v1")
+	apiPublic.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	apiPublic.GET("/health", app.Health)
 	apiPublic.GET("/auth/github", githubOAuth.LoginRedirectHandler)
 	apiPublic.GET("/auth/github/callback", func(context *gin.Context) {

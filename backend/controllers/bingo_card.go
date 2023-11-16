@@ -8,15 +8,17 @@ import (
 	"net/http"
 )
 
-type BingoCardDto struct {
-	ID          uint   `json:"id"`
-	Description string `json:"description"`
-	UserCount   uint   `json:"user_count"`
-	Selected    bool   `json:"selected"`
-}
-
+// FindBingoCards godoc
+// @Summary Get all bingo cards.
+// @Schemes http
+// @Description Get all bingo cards.
+// @Tags Bingo Card
+// @Accept json
+// @Produce json
+// @Success 200 {array} models.BingoCardDto
+// @Router /bingoCards [get]
 func FindBingoCards(c *gin.Context) {
-	var bingoCards []BingoCardDto
+	var bingoCards []models.BingoCardDto
 
 	models.DB.Table("bingo_cards").
 		Select("bingo_cards.id, bingo_cards.description, count(user_bingo_cards.bingo_card_id) as user_count").
