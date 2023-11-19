@@ -31,10 +31,10 @@
 .bingo-item-wrapper:nth-child(16) { grid-area: p }
 
 .bingo-item-wrapper {
+    margin: 1em;
     text-align: center;
     place-content: center;
     flex-direction: column;
-    margin: 1em;
 
     &:hover {
         transform: scale(1.1); /* Increase the size by 5% on hover */
