@@ -17,7 +17,7 @@ export class BingoApiService {
     private readonly baseUrl: string;
 
     constructor() {
-        this.baseUrl = 'http://localhost:8080/api/v1';
+        this.baseUrl = '/api/v1';
     }
 
     public getAllBingoCards(): Observable<BingoCardDto[]> {
