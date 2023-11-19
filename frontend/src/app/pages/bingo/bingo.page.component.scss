@@ -2,37 +2,62 @@
     color: white;
 }
 
-.center-container {
-    max-width: 680px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.bingo-grid {
+    display: grid;
+    justify-content: center; /* centers grid items */
+    grid-template-areas: ". . . . a a . . . ."
+                         ". . . b b c c . . ."
+                         ". . d d e e f f . ."
+                         ". g g h h i i j j ."
+                         "k k l l m m n n o o"
+                         ". . . . p p . . . .";
 }
 
-.box {
-    display: grid;
-    height: 170px;
-    max-width: 170px;
+.bingo-item-wrapper:nth-child(1) { grid-area: a }
+.bingo-item-wrapper:nth-child(2) { grid-area: b }
+.bingo-item-wrapper:nth-child(3) { grid-area: c }
+.bingo-item-wrapper:nth-child(4) { grid-area: d }
+.bingo-item-wrapper:nth-child(5) { grid-area: e }
+.bingo-item-wrapper:nth-child(6) { grid-area: f }
+.bingo-item-wrapper:nth-child(7) { grid-area: g }
+.bingo-item-wrapper:nth-child(8) { grid-area: h }
+.bingo-item-wrapper:nth-child(9) { grid-area: i }
+.bingo-item-wrapper:nth-child(10) { grid-area: j }
+.bingo-item-wrapper:nth-child(11) { grid-area: k }
+.bingo-item-wrapper:nth-child(12) { grid-area: l }
+.bingo-item-wrapper:nth-child(13) { grid-area: m }
+.bingo-item-wrapper:nth-child(14) { grid-area: n }
+.bingo-item-wrapper:nth-child(15) { grid-area: o }
+.bingo-item-wrapper:nth-child(16) { grid-area: p }
+
+.bingo-item-wrapper {
     text-align: center;
     place-content: center;
-    border: solid 5px #cccccc;
-    border-radius: 10px;
-    margin: 2px;
+    flex-direction: column;
+    margin: 1em;
+
+    &:hover {
+        transform: scale(1.1); /* Increase the size by 5% on hover */
+        cursor: pointer;
+    }
 }
 
-.box:hover, .box-yellow:hover {
-    transform: scale(1.1); /* Increase the size by 5% on hover */
-    cursor: pointer;
+.bingo-item {
+    & {
+        margin: 2px;
+        border-radius: 10px;
+        border: solid 5px #cccccc;
+    }
+
+    &:hover {
+        color: #99ff99;
+        border: solid 5px #99ff99;
+    }
 }
 
-.box-yellow {
-    display: grid;
-    height: 170px;
-    max-width: 170px;
-    text-align: center;
-    place-content: center;
-    border: solid 5px #fff84d;
-    border-radius: 10px;
-    margin: 2px;
+.selected {
+    & {
+        color: #009900;
+        border: solid 5px #009900;
+    }
 }

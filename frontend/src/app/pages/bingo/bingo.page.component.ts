@@ -1,45 +1,40 @@
-import {NgClass, NgForOf, NgIf} from '@angular/common';
-import {Component, OnInit} from '@angular/core';
+import {AsyncPipe, NgClass, NgForOf, NgIf} from '@angular/common';
+import {Component, OnInit, inject} from '@angular/core';
+
+import {Subject} from 'rxjs';
 
 import {BingoCardDto} from '../../core/api/model/bingoCardDto';
 import {UserDto} from '../../core/api/model/userDto';
-import {ApiService} from '../../core/api/service/api.service';
+import {BingoApiService} from '../../core/api/service/bingo-api.service';
+import {UserCountPipe} from '../../core/pipes/user-count.pipe';
+import {RefreshService} from '../../core/services/refresh.service';
 
 @Component({
     standalone: true,
     selector: 'app-bingo-page',
     templateUrl: 'bingo.page.component.html',
-    imports: [NgForOf, NgIf, NgClass],
+    imports: [NgForOf, NgIf, NgClass, AsyncPipe, UserCountPipe],
     styleUrls: ['bingo.page.component.scss']
 })
 export class BingoPageComponent implements OnInit {
-    public user: UserDto | undefined;
-    public bingoCards: BingoCardDto[] = [];
+    private refreshService = inject(RefreshService);
+    private bingoApiService = inject(BingoApiService);
 
-    constructor(private apiService: ApiService) {}
+    public user: UserDto | undefined;
+    public bingoCardsSubject = new Subject<BingoCardDto[]>();
 
     ngOnInit(): void {
-        this.fetchBingoCards();
+        this.refreshService.onRefreshBingoCards().subscribe(() => this.bingoApiService.getAllBingoCards().subscribe(cards => this.bingoCardsSubject.next(cards)));
     }
 
-    private fetchBingoCards(): void {
-        this.apiService.getAllBingoCards().subscribe({
-            next: bingoCards => (this.bingoCards = bingoCards),
-            error: e => console.log(e)
-        });
+    private fetchBingoCards() {
+        this.bingoApiService.getAllBingoCards().subscribe(cards => this.bingoCardsSubject.next(cards));
     }
 
     clickBingoCard(id: number): void {
-        this.apiService.clickBingoCard(id).subscribe({
-            next: user => (this.user = user),
-            error: e => console.log(e)
+        this.bingoApiService.clickBingoCard(id).subscribe(res => {
+            console.log(res);
+            this.fetchBingoCards();
         });
-    }
-
-    userHasBingoCardClass(id: number): string {
-        if (this.user && this.user.bingo_cards.some(bingoCard => bingoCard.id === id)) {
-            return 'box-yellow';
-        }
-        return 'box';
     }
 }
