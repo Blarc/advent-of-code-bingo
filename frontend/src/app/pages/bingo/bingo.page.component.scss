@@ -1,10 +1,13 @@
 * {
     color: white;
+    font-size: small;
 }
 
 .bingo-grid {
     display: grid;
-    justify-content: center; /* centers grid items */
+    justify-content: center;
+    grid-template-rows: repeat(12, 10rem);
+    grid-template-columns: repeat(12, 5rem);
     grid-template-areas: ". . . . a a . . . ."
                          ". . . b b c c . . ."
                          ". . d d e e f f . ."
@@ -45,6 +48,9 @@
 .bingo-item {
     & {
         margin: 2px;
+        height: 100%;
+        display: flex;
+        align-items: center;
         border-radius: 10px;
         border: solid 5px #cccccc;
     }
