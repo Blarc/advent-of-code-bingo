@@ -1,5 +1,5 @@
 <div class="bingo-grid">
-    <div class="bingo-item-wrapper" *ngFor='let card of (bingoCardsSubject | async)'>
+    <div [ngClass]='card.selected ?  "bingo-item-wrapper selected" : "bingo-item-wrapper"' *ngFor='let card of (bingoCardsSubject | async)'>
         <div [ngClass]='card.selected ?  "bingo-item selected" : "bingo-item"' (click)='clickBingoCard(card.id)'>{{card.description}}</div>
         <small>{{ card | userCount }}</small>
     </div>
