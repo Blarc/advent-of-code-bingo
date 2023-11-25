@@ -269,7 +269,10 @@ func Verifier() gin.HandlerFunc {
 
 		log.Printf("Searching for user with id %s\n", userUuid)
 		var user models.User
-		result := models.DB.Preload("BingoCards").First(&user, "id = ?", userUuid)
+		result := models.DB.
+			Preload("BingoCards").
+			Preload("BingoBoards").
+			First(&user, "id = ?", userUuid)
 		if result.Error != nil {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return

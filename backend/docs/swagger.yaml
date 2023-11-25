@@ -1,5 +1,21 @@
 basePath: /api/v1
 definitions:
+  controllers.CreateBingoBoardDto:
+    properties:
+      name:
+        type: string
+    type: object
+  models.BingoBoardDto:
+    properties:
+      bingo_cards:
+        items:
+          $ref: '#/definitions/models.BingoCardDto'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   models.BingoCardDto:
     properties:
       description:
@@ -15,6 +31,10 @@ definitions:
     properties:
       avatar_url:
         type: string
+      bingo_boards:
+        items:
+          $ref: '#/definitions/models.BingoBoardDto'
+        type: array
       bingo_cards:
         items:
           $ref: '#/definitions/models.BingoCardDto'
@@ -72,6 +92,53 @@ paths:
       summary: Get user information.
       tags:
       - User
+  /me/bingoBoard:
+    post:
+      consumes:
+      - application/json
+      description: Create a new bingo board.
+      parameters:
+      - description: Bingo Board Name
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateBingoBoardDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserDto'
+      security:
+      - Token: []
+      summary: Create bingo board.
+      tags:
+      - Bingo Board
+  /me/bingoBoard/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a bingo board.
+      parameters:
+      - description: Bingo Board ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserDto'
+      security:
+      - Token: []
+      summary: Delete bingo board.
+      tags:
+      - Bingo Board
   /me/bingoCard/{id}:
     post:
       consumes:

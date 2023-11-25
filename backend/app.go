@@ -108,6 +108,8 @@ func (app *App) start() {
 	protected.Use(auth.Verifier())
 	protected.GET("/me", controllers.FindMe)
 	protected.POST("/me/bingoCard/:id", controllers.ClickBingoCard)
+	protected.POST("/me/bingoBoard", controllers.CreateBingoBoard)
+	protected.DELETE("/me/bingoBoard/:id", controllers.DeleteBingoBoard)
 
 	log.Fatal(app.router.Run())
 }

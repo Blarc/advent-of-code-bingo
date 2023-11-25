@@ -20,14 +20,20 @@ type User struct {
 }
 
 type UserDto struct {
-	Name         string         `json:"name"`
-	AvatarURL    string         `json:"avatar_url"`
-	GithubURL    string         `json:"github_url"`
-	RedditURL    string         `json:"reddit_url"`
-	BingoCardDto []BingoCardDto `json:"bingo_cards"`
+	Name         string          `json:"name"`
+	AvatarURL    string          `json:"avatar_url"`
+	GithubURL    string          `json:"github_url"`
+	RedditURL    string          `json:"reddit_url"`
+	BingoBoards  []BingoBoardDto `json:"bingo_boards"`
+	BingoCardDto []BingoCardDto  `json:"bingo_cards"`
 }
 
 func (u *User) MapToDto() UserDto {
+	var bingoBoards []BingoBoardDto
+	for _, bingoBoard := range u.BingoBoards {
+		bingoBoards = append(bingoBoards, bingoBoard.MapToDto())
+	}
+
 	var bingoCardDtos []BingoCardDto
 	for _, bingoCard := range u.BingoCards {
 		bingoCardDtos = append(bingoCardDtos, bingoCard.MapToDto())
@@ -38,6 +44,7 @@ func (u *User) MapToDto() UserDto {
 		AvatarURL:    u.AvatarURL,
 		GithubURL:    u.GithubURL,
 		RedditURL:    u.RedditURL,
+		BingoBoards:  bingoBoards,
 		BingoCardDto: bingoCardDtos,
 	}
 }
