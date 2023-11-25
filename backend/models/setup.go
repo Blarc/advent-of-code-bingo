@@ -32,7 +32,7 @@ func ConnectDatabase() {
 		panic("Failed to connect to database!")
 	}
 
-	err = db.AutoMigrate(&User{}, &BingoCard{})
+	err = db.AutoMigrate(&User{}, &BingoCard{}, &BingoBoard{})
 	if err != nil {
 		return
 	}

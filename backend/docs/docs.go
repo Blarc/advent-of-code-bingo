@@ -76,6 +76,82 @@ const docTemplate = `{
                 }
             }
         },
+        "/me/bingoBoard": {
+            "post": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "description": "Create a new bingo board.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bingo Board"
+                ],
+                "summary": "Create bingo board.",
+                "parameters": [
+                    {
+                        "description": "Bingo Board Name",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateBingoBoardDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/me/bingoBoard/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "description": "Delete a bingo board.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bingo Board"
+                ],
+                "summary": "Delete bingo board.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Bingo Board ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDto"
+                        }
+                    }
+                }
+            }
+        },
         "/me/bingoCard/{id}": {
             "post": {
                 "security": [
@@ -115,6 +191,31 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.CreateBingoBoardDto": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BingoBoardDto": {
+            "type": "object",
+            "properties": {
+                "bingo_cards": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.BingoCardDto"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.BingoCardDto": {
             "type": "object",
             "properties": {
@@ -137,6 +238,12 @@ const docTemplate = `{
             "properties": {
                 "avatar_url": {
                     "type": "string"
+                },
+                "bingo_boards": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.BingoBoardDto"
+                    }
                 },
                 "bingo_cards": {
                     "type": "array",
