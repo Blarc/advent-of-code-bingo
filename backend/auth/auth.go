@@ -290,6 +290,10 @@ func GetUserUuidFromHeader(ctx *gin.Context) *uuid.UUID {
 		return nil
 	}
 
+	if len(header) <= len("Bearer ") {
+		return nil
+	}
+
 	encryptedUuid := header[len("Bearer "):]
 	if encryptedUuid == "" {
 		return nil

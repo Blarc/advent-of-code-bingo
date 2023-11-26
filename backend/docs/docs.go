@@ -22,6 +22,191 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/bingoBoard": {
+            "post": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "description": "Create a new bingo board with random bingo cards.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bingo Board"
+                ],
+                "summary": "Create bingo board.",
+                "parameters": [
+                    {
+                        "description": "Bingo Board Name",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateBingoBoardDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/bingoBoard/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "description": "Get a bingo board.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bingo Board"
+                ],
+                "summary": "Get bingo board.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bingo Board ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "description": "Delete a bingo board.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bingo Board"
+                ],
+                "summary": "Delete bingo board.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bingo Board ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/bingoBoard/{id}/join": {
+            "post": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "description": "Join a bingo board.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bingo Board"
+                ],
+                "summary": "Join bingo board.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bingo Board ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/bingoBoard/{id}/leave": {
+            "delete": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "description": "Leave a bingo board.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bingo Board"
+                ],
+                "summary": "Leave bingo board.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bingo Board ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/bingoCards": {
             "get": {
                 "description": "Get all bingo cards.",
@@ -66,82 +251,6 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Get user information.",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.UserDto"
-                        }
-                    }
-                }
-            }
-        },
-        "/me/bingoBoard": {
-            "post": {
-                "security": [
-                    {
-                        "Token": []
-                    }
-                ],
-                "description": "Create a new bingo board.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Bingo Board"
-                ],
-                "summary": "Create bingo board.",
-                "parameters": [
-                    {
-                        "description": "Bingo Board Name",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CreateBingoBoardDto"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.UserDto"
-                        }
-                    }
-                }
-            }
-        },
-        "/me/bingoBoard/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "Token": []
-                    }
-                ],
-                "description": "Delete a bingo board.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Bingo Board"
-                ],
-                "summary": "Delete bingo board.",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Bingo Board ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -208,10 +317,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.BingoCardDto"
                     }
                 },
-                "id": {
-                    "type": "integer"
-                },
                 "name": {
+                    "type": "string"
+                },
+                "short_uuid": {
                     "type": "string"
                 }
             }

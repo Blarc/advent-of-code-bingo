@@ -11,9 +11,9 @@ definitions:
         items:
           $ref: '#/definitions/models.BingoCardDto'
         type: array
-      id:
-        type: integer
       name:
+        type: string
+      short_uuid:
         type: string
     type: object
   models.BingoCardDto:
@@ -58,6 +58,121 @@ info:
   title: Advent of Code Bingo API
   version: "1.0"
 paths:
+  /bingoBoard:
+    post:
+      consumes:
+      - application/json
+      description: Create a new bingo board with random bingo cards.
+      parameters:
+      - description: Bingo Board Name
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateBingoBoardDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserDto'
+      security:
+      - Token: []
+      summary: Create bingo board.
+      tags:
+      - Bingo Board
+  /bingoBoard/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a bingo board.
+      parameters:
+      - description: Bingo Board ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserDto'
+      security:
+      - Token: []
+      summary: Delete bingo board.
+      tags:
+      - Bingo Board
+    get:
+      consumes:
+      - application/json
+      description: Get a bingo board.
+      parameters:
+      - description: Bingo Board ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - Token: []
+      summary: Get bingo board.
+      tags:
+      - Bingo Board
+  /bingoBoard/{id}/join:
+    post:
+      consumes:
+      - application/json
+      description: Join a bingo board.
+      parameters:
+      - description: Bingo Board ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - Token: []
+      summary: Join bingo board.
+      tags:
+      - Bingo Board
+  /bingoBoard/{id}/leave:
+    delete:
+      consumes:
+      - application/json
+      description: Leave a bingo board.
+      parameters:
+      - description: Bingo Board ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - Token: []
+      summary: Leave bingo board.
+      tags:
+      - Bingo Board
   /bingoCards:
     get:
       consumes:
@@ -92,53 +207,6 @@ paths:
       summary: Get user information.
       tags:
       - User
-  /me/bingoBoard:
-    post:
-      consumes:
-      - application/json
-      description: Create a new bingo board.
-      parameters:
-      - description: Bingo Board Name
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.CreateBingoBoardDto'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.UserDto'
-      security:
-      - Token: []
-      summary: Create bingo board.
-      tags:
-      - Bingo Board
-  /me/bingoBoard/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a bingo board.
-      parameters:
-      - description: Bingo Board ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.UserDto'
-      security:
-      - Token: []
-      summary: Delete bingo board.
-      tags:
-      - Bingo Board
   /me/bingoCard/{id}:
     post:
       consumes:

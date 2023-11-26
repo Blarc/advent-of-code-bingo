@@ -16,7 +16,7 @@ type User struct {
 	GithubURL   string       `gorm:"size:255" json:"github_url"`
 	RedditURL   string       `gorm:"size:255" json:"reddit_url"`
 	BingoCards  []BingoCard  `gorm:"many2many:user_bingo_card;" json:"bingo_cards"`
-	BingoBoards []BingoBoard `gorm:"one2many:user_bingo_board;" json:"bingo_boards"`
+	BingoBoards []BingoBoard `gorm:"many2many:user_bingo_board;" json:"bingo_boards"`
 }
 
 type UserDto struct {
