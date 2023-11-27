@@ -4,7 +4,6 @@ import (
 	"github.com/Blarc/advent-of-code-bingo/docs"
 	"github.com/Blarc/advent-of-code-bingo/models"
 	"github.com/Blarc/advent-of-code-bingo/utils"
-	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -35,8 +34,5 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{utils.GetEnvVariable("SCHEME")}
 	models.ConnectDatabase()
 
-	app := App{
-		router: gin.Default(),
-	}
-	app.start()
+	newApp().start()
 }

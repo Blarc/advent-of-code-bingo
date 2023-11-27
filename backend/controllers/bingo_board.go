@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/Blarc/advent-of-code-bingo/models"
+	"github.com/Blarc/advent-of-code-bingo/repo"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -65,8 +66,9 @@ func FindBingoBoard(c *gin.Context) {
 	}
 
 	// Find the bingo board by the first 16 characters of the ID
-	var bingoBoard models.BingoBoard
-	if err := models.DB.Preload("Users").First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID).Error; err != nil {
+	bingoBoardRepo := repo.NewBingoBoardRepo(models.DB)
+	bingoBoard, err := bingoBoardRepo.FindBingoBoard(bingoBoardId.ID)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

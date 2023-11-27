@@ -21,6 +21,12 @@ type App struct {
 	router *gin.Engine
 }
 
+func newApp() *App {
+	return &App{
+		router: gin.Default(),
+	}
+}
+
 func CORS() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
