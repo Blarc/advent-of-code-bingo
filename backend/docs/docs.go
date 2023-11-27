@@ -47,7 +47,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controllers.CreateBingoBoardDto"
+                            "$ref": "#/definitions/models.CreateBingoBoardDto"
                         }
                     }
                 ],
@@ -128,6 +128,52 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.UserDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/bingoBoard/{id}/addBingoCard": {
+            "put": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "description": "Add a bingo card to a bingo board.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bingo Board"
+                ],
+                "summary": "Add bingo card.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bingo Board ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Bingo Card UUID",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.BingoCardId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -231,6 +277,38 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Create a bingo card.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bingo Card"
+                ],
+                "summary": "Create a bingo card.",
+                "parameters": [
+                    {
+                        "description": "Bingo Card",
+                        "name": "bingoCard",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateBingoCardDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.BingoCardDto"
+                        }
+                    }
+                }
             }
         },
         "/me": {
@@ -300,10 +378,13 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.CreateBingoBoardDto": {
+        "controllers.CreateBingoCardDto": {
             "type": "object",
+            "required": [
+                "description"
+            ],
             "properties": {
-                "name": {
+                "description": {
                     "type": "string"
                 }
             }
@@ -332,13 +413,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "selected": {
                     "type": "boolean"
                 },
                 "user_count": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.BingoCardId": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CreateBingoBoardDto": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
                 }
             }
         },

@@ -1,9 +1,11 @@
 basePath: /api/v1
 definitions:
-  controllers.CreateBingoBoardDto:
+  controllers.CreateBingoCardDto:
     properties:
-      name:
+      description:
         type: string
+    required:
+    - description
     type: object
   models.BingoBoardDto:
     properties:
@@ -21,11 +23,23 @@ definitions:
       description:
         type: string
       id:
-        type: integer
+        type: string
       selected:
         type: boolean
       user_count:
         type: integer
+    type: object
+  models.BingoCardId:
+    properties:
+      id:
+        type: string
+    required:
+    - id
+    type: object
+  models.CreateBingoBoardDto:
+    properties:
+      name:
+        type: string
     type: object
   models.UserDto:
     properties:
@@ -69,7 +83,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/controllers.CreateBingoBoardDto'
+          $ref: '#/definitions/models.CreateBingoBoardDto'
       produces:
       - application/json
       responses:
@@ -125,6 +139,35 @@ paths:
       security:
       - Token: []
       summary: Get bingo board.
+      tags:
+      - Bingo Board
+  /bingoBoard/{id}/addBingoCard:
+    put:
+      consumes:
+      - application/json
+      description: Add a bingo card to a bingo board.
+      parameters:
+      - description: Bingo Board ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Bingo Card UUID
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.BingoCardId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - Token: []
+      summary: Add bingo card.
       tags:
       - Bingo Board
   /bingoBoard/{id}/join:
@@ -188,6 +231,27 @@ paths:
               $ref: '#/definitions/models.BingoCardDto'
             type: array
       summary: Get all bingo cards.
+      tags:
+      - Bingo Card
+    post:
+      consumes:
+      - application/json
+      description: Create a bingo card.
+      parameters:
+      - description: Bingo Card
+        in: body
+        name: bingoCard
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateBingoCardDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BingoCardDto'
+      summary: Create a bingo card.
       tags:
       - Bingo Card
   /me:

@@ -28,10 +28,6 @@ func FindMe(c *gin.Context) {
 	c.JSON(http.StatusOK, user.MapToDto())
 }
 
-type BingoCardId struct {
-	ID uint `uri:"id" binding:"required"`
-}
-
 // ClickBingoCard godoc
 // @Summary Click bingo card.
 // @Schemes http
@@ -45,7 +41,7 @@ type BingoCardId struct {
 // @Security Token
 func ClickBingoCard(c *gin.Context) {
 
-	var bingoCardId BingoCardId
+	var bingoCardId models.BingoCardId
 	if err := c.ShouldBindUri(&bingoCardId); err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

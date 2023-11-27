@@ -1,17 +1,22 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type BingoCard struct {
 	gorm.Model
-	Description string `json:"description"`
+	ID          uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()"`
+	Description string    `json:"description"`
+	Public      bool      `json:"public"`
 }
 
 type BingoCardDto struct {
-	ID          uint   `json:"id"`
-	Description string `json:"description"`
-	UserCount   uint   `json:"user_count"`
-	Selected    bool   `json:"selected"`
+	ID          uuid.UUID `json:"id"`
+	Description string    `json:"description"`
+	UserCount   uint      `json:"user_count"`
+	Selected    bool      `json:"selected"`
 }
 
 func (b *BingoCard) MapToDto() BingoCardDto {
@@ -19,4 +24,8 @@ func (b *BingoCard) MapToDto() BingoCardDto {
 		ID:          b.ID,
 		Description: b.Description,
 	}
+}
+
+type BingoCardId struct {
+	ID uuid.UUID `uri:"id" binding:"required"`
 }

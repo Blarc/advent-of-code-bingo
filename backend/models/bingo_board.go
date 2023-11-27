@@ -32,3 +32,11 @@ func (b *BingoBoard) MapToDto() BingoBoardDto {
 		BingoCards: bingoCardDtos,
 	}
 }
+
+type BingoBoardId struct {
+	ID string `uri:"id" binding:"required"`
+}
+
+type CreateBingoBoardDto struct {
+	Name string `json:"name"`
+}

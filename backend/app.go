@@ -109,12 +109,17 @@ func (app *App) start() {
 	protected.GET("/me", controllers.FindMe)
 	protected.POST("/me/bingoCard/:id", controllers.ClickBingoCard)
 
+	// Bingo Card
+	protected.POST("/bingoCards", controllers.CreateBingoCard)
+
 	// Bingo Board
-	protected.GET("/bingoBoard/:id", controllers.FindBingoBoard)
-	protected.POST("/bingoBoard", controllers.CreateBingoBoard)
-	protected.DELETE("/bingoBoard/:id", controllers.DeleteBingoBoard)
-	protected.POST("/bingoBoard/:id/join", controllers.JoinBingoBoard)
-	protected.DELETE("/bingoBoard/:id/leave", controllers.LeaveBingoBoard)
+	bingoBoards := protected.Group("/bingoBoard")
+	bingoBoards.GET("/:id", controllers.FindBingoBoard)
+	bingoBoards.POST("/", controllers.CreateBingoBoard)
+	bingoBoards.DELETE("/:id", controllers.DeleteBingoBoard)
+	bingoBoards.POST("/:id/join", controllers.JoinBingoBoard)
+	bingoBoards.DELETE("/:id/leave", controllers.LeaveBingoBoard)
+	bingoBoards.PUT("/:id/addBingoCard", controllers.AddBingoCard)
 
 	log.Fatal(app.router.Run())
 }

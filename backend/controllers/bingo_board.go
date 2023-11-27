@@ -8,10 +8,6 @@ import (
 	"net/http"
 )
 
-type CreateBingoBoardDto struct {
-	Name string `json:"name"`
-}
-
 // CreateBingoBoard godoc
 // @Summary Create bingo board.
 // @Schemes http
@@ -21,11 +17,11 @@ type CreateBingoBoardDto struct {
 // @Produce json
 // @Success 200 {object} models.UserDto
 // @Router /bingoBoard [post]
-// @Param data body CreateBingoBoardDto true "Bingo Board Name"
+// @Param data body models.CreateBingoBoardDto true "Bingo Board Name"
 // @Security Token
 func CreateBingoBoard(c *gin.Context) {
 
-	var createBingoBoardDto CreateBingoBoardDto
+	var createBingoBoardDto models.CreateBingoBoardDto
 	if err := c.ShouldBindJSON(&createBingoBoardDto); err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -61,10 +57,6 @@ func CreateBingoBoard(c *gin.Context) {
 	c.JSON(http.StatusOK, user.MapToDto())
 }
 
-type BingoBoardId struct {
-	ID string `uri:"id" binding:"required"`
-}
-
 // FindBingoBoard godoc
 // @Summary Get bingo board.
 // @Schemes http
@@ -77,7 +69,7 @@ type BingoBoardId struct {
 // @Param id path string true "Bingo Board ID"
 // @Security Token
 func FindBingoBoard(c *gin.Context) {
-	var bingoBoardId BingoBoardId
+	var bingoBoardId models.BingoBoardId
 	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -129,7 +121,7 @@ func FindBingoBoard(c *gin.Context) {
 // @Security Token
 func DeleteBingoBoard(c *gin.Context) {
 
-	var bingoBoardId BingoBoardId
+	var bingoBoardId models.BingoBoardId
 	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -166,7 +158,7 @@ func DeleteBingoBoard(c *gin.Context) {
 // @Param id path string true "Bingo Board ID"
 // @Security Token
 func JoinBingoBoard(c *gin.Context) {
-	var bingoBoardId BingoBoardId
+	var bingoBoardId models.BingoBoardId
 	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -202,7 +194,7 @@ func JoinBingoBoard(c *gin.Context) {
 // @Param id path string true "Bingo Board ID"
 // @Security Token
 func LeaveBingoBoard(c *gin.Context) {
-	var bingoBoardId BingoBoardId
+	var bingoBoardId models.BingoBoardId
 	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -229,4 +221,102 @@ func LeaveBingoBoard(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user.MapToDto())
+}
+
+// AddBingoCard godoc
+// @Summary Add bingo card.
+// @Schemes http
+// @Description Add a bingo card to a bingo board.
+// @Tags Bingo Board
+// @Accept json
+// @Produce json
+// @Success 200 {object} string
+// @Router /bingoBoard/{id}/addBingoCard [put]
+// @Param id path string true "Bingo Board ID"
+// @Param data body models.BingoCardId true "Bingo Card UUID"
+// @Security Token
+func AddBingoCard(c *gin.Context) {
+	var bingoBoardId models.BingoBoardId
+	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Find the bingo board by the first 16 characters of the ID
+	var bingoBoard models.BingoBoard
+	if err := models.DB.First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var bingoCardId models.BingoCardId
+	if err := c.ShouldBindJSON(&bingoCardId); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var bingoCard models.BingoCard
+	if err := models.DB.First(&bingoCard, bingoCardId.ID).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := models.DB.Model(&bingoBoard).Association("BingoCards").Append(&bingoCard)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, bingoBoard.MapToDto())
+}
+
+// RemoveBingoCard godoc
+// @Summary Remove bingo card.
+// @Schemes http
+// @Description Remove a bingo card from a bingo board.
+// @Tags Bingo Board
+// @Accept json
+// @Produce json
+// @Success 200 {object} string
+// @Router /bingoBoard/{id}/removeBingoCard [put]
+// @Param id path string true "Bingo Board ID"
+// @Param data body models.BingoCardId true "Bingo Card UUID"
+// @Security Token
+func RemoveBingoCard(c *gin.Context) {
+	var bingoBoardId models.BingoBoardId
+	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Find the bingo board by the first 16 characters of the ID
+	var bingoBoard models.BingoBoard
+	if err := models.DB.First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var bingoCardId models.BingoCardId
+	if err := c.ShouldBindJSON(&bingoCardId); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var bingoCard models.BingoCard
+	if err := models.DB.First(&bingoCard, bingoCardId.ID).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := models.DB.Model(&bingoBoard).Association("BingoCards").Delete(&bingoCard)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, bingoBoard.MapToDto())
 }
