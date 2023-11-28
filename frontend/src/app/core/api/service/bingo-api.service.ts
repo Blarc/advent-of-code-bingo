@@ -14,36 +14,34 @@ export class BingoApiService {
     private http = inject(HttpClient);
     private cookiesService = inject(CookiesService);
 
-    private readonly baseUrl: string;
+    private readonly baseUrl = '/api/v1';
 
-    constructor() {
-        this.baseUrl = '/api/v1';
+    private getAuthHeaders(): HttpHeaders | undefined {
+        const token = this.cookiesService.getCookie('token');
+
+        if (!token) {
+            return;
+        }
+
+        return new HttpHeaders({
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${decodeURIComponent(token)}`
+        });
     }
 
     public getAllBingoCards(): Observable<BingoCardDto[]> {
-        if (this.cookiesService.getCookie('token')) {
-            const headers = new HttpHeaders({
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${decodeURIComponent(this.cookiesService.getCookie('token'))}`
-            });
-            return this.http.get<BingoCardDto[]>(`${this.baseUrl}/bingoCards`, {headers: headers});
-        }
-        return this.http.get<BingoCardDto[]>(`${this.baseUrl}/bingoCards`);
+        const headers = this.getAuthHeaders();
+        const httpOptions = headers ? {headers} : undefined;
+        return this.http.get<BingoCardDto[]>(`${this.baseUrl}/bingoCards`, httpOptions);
     }
 
     public getUserInfo(): Observable<UserDto> {
-        const headers = new HttpHeaders({
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${decodeURIComponent(this.cookiesService.getCookie('token'))}`
-        });
+        const headers = this.getAuthHeaders();
         return this.http.get<UserDto>(`${this.baseUrl}/me`, {headers: headers});
     }
 
-    public clickBingoCard(id: number): Observable<UserDto> {
-        const headers = new HttpHeaders({
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${decodeURIComponent(this.cookiesService.getCookie('token'))}`
-        });
-        return this.http.post<UserDto>(`${this.baseUrl}/me/bingoCard/${id}`, null, {headers: headers});
+    public clickBingoCard(uuid: string): Observable<UserDto> {
+        const headers = this.getAuthHeaders();
+        return this.http.post<UserDto>(`${this.baseUrl}/me/bingoCard/${uuid}`, null, {headers: headers});
     }
 }

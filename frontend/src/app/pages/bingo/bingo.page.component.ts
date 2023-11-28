@@ -25,13 +25,15 @@ export class BingoPageComponent implements OnInit {
 
     ngOnInit(): void {
         this.refreshService.onRefreshBingoCards().subscribe(() => this.bingoApiService.getAllBingoCards().subscribe(cards => this.bingoCardsSubject.next(cards)));
+        // this.bingoCardsSubject.next(this.cards);
     }
 
     private fetchBingoCards() {
         this.bingoApiService.getAllBingoCards().subscribe(cards => this.bingoCardsSubject.next(cards));
+        // this.bingoCardsSubject.next(this.cards);
     }
 
-    clickBingoCard(id: number): void {
+    clickBingoCard(id: string): void {
         this.bingoApiService.clickBingoCard(id).subscribe(res => {
             console.log(res);
             this.fetchBingoCards();

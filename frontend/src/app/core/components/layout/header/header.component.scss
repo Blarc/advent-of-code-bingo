@@ -7,8 +7,8 @@ header {
     }
 
     h1 a {
-        text-decoration: none;
         color: #00cc00;
+        text-decoration: none;
         text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00;
     }
 
@@ -30,6 +30,7 @@ header {
             color: white;
 
             a {
+                cursor: pointer;
                 text-decoration: none;
                 color: #009900;
                 font-size: 1rem;

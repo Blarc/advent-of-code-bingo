@@ -1,6 +1,6 @@
 import {Injectable, inject} from '@angular/core';
 
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, filter, switchMap} from 'rxjs';
 
 import {UserDto} from '../api/model/userDto';
 import {BingoApiService} from '../api/service/bingo-api.service';
@@ -17,9 +17,18 @@ export class AuthService {
     private userSubject = new BehaviorSubject<UserDto | null>(null);
 
     constructor() {
+        this.initializeTokenSubject();
+    }
+
+    private initializeTokenSubject(): void {
         const token = this.cookieService.getCookie('token');
         this.tokenSubject.next(token);
-        this.tokenSubject.subscribe(() => this.bingoApiService.getUserInfo().subscribe(user => this.userSubject.next(user)));
+        this.tokenSubject
+            .pipe(
+                filter(token => token !== null),
+                switchMap(() => this.bingoApiService.getUserInfo())
+            )
+            .subscribe(user => this.userSubject.next(user));
     }
 
     public get tokenSubject$() {
