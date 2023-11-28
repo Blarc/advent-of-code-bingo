@@ -216,6 +216,35 @@ paths:
       summary: Leave bingo board.
       tags:
       - Bingo Board
+  /bingoBoard/{id}/removeBingoCard:
+    put:
+      consumes:
+      - application/json
+      description: Remove a bingo card from a bingo board.
+      parameters:
+      - description: Bingo Board ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Bingo Card UUID
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.BingoCardId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - Token: []
+      summary: Remove bingo card.
+      tags:
+      - Bingo Board
   /bingoCards:
     get:
       consumes:
@@ -281,7 +310,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:

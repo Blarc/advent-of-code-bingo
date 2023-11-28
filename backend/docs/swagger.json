@@ -247,6 +247,52 @@
                 }
             }
         },
+        "/bingoBoard/{id}/removeBingoCard": {
+            "put": {
+                "security": [
+                    {
+                        "Token": []
+                    }
+                ],
+                "description": "Remove a bingo card from a bingo board.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bingo Board"
+                ],
+                "summary": "Remove bingo card.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bingo Board ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Bingo Card UUID",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.BingoCardId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/bingoCards": {
             "get": {
                 "description": "Get all bingo cards.",
@@ -353,7 +399,7 @@
                 "summary": "Click bingo card.",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Bingo Card ID",
                         "name": "id",
                         "in": "path",

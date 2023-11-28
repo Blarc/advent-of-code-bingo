@@ -27,5 +27,5 @@ func (b *BingoCard) MapToDto() BingoCardDto {
 }
 
 type BingoCardId struct {
-	ID uuid.UUID `uri:"id" binding:"required"`
+	ID string `uri:"id" binding:"required"`
 }
