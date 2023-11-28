@@ -1,5 +1,5 @@
-import {BingoBoardDto} from './bingoBoardDto';
-import {BingoCardDto} from './bingoCardDto';
+import {BingoBoardDto} from './bingoBoardDto.model';
+import {BingoCardDto} from './bingoCardDto.model';
 
 export class UserDto {
     'avatar_url': string;
@@ -8,4 +8,5 @@ export class UserDto {
     'reddit_url': string;
     'bingo_cards': BingoCardDto[];
     'bingo_boards': BingoBoardDto[];
+    'personal_bingo_board': BingoBoardDto;
 }

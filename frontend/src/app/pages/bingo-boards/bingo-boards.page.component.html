@@ -1,0 +1,35 @@
+<div class='bingo-boards'>
+    <div class='subsection'>
+        <p>You can join private bingo board by entering its join code here:</p>
+        <form [formGroup]='bingoBoardForm'>
+            <input type='text' formControlName='boardName'><a class='green' (click)='joinBingoBoard()'>[Join]</a>
+        </form>
+    </div>
+
+    <div class='subsection'>
+        <p>--- Private Bingo Board Memberships ---</p>
+        <div *ngIf='(user$ | async)?.bingo_boards && (user$ | async)!.bingo_boards!.length > 0; else noPrivateBoards'>
+            <p>You are a member of the following private bingo boards owned by someone else:</p>
+            <ul>
+                <li *ngFor='let board of (user$ | async)!.bingo_boards'><span class='green' [routerLink]="board.short_uuid">[View]</span><span class='green' (click)='leaveBingoBoard(board.short_uuid)'>[Leave]</span>{{board.name}}</li>
+            </ul>
+        </div>
+        <ng-template #noPrivateBoards>
+            <p>You are not a member of any private bingo board. Join them or create your own.</p>
+        </ng-template>
+    </div>
+
+    <div class='subsection'>
+        <p>--- Your Private Bingo Boards ---</p>
+        <div *ngIf='(user$ | async)?.personal_bingo_board; else noPersonalBoard; let personalBingoBoard'>
+            <p>You have a private bingo board that only you and its members can <a class='green' [routerLink]="personalBingoBoard.short_uuid">[View]</a>.</p>
+            <ul>
+                <li>- Others can join it using the code <code>{{personalBingoBoard.short_uuid}}</code>.</li>
+                <li>- If you no longer want your bingo board, you can <a class='green' (click)='deleteBingoBoard()'>[Irrevocably Obliterate Your Private Bingo Board]</a>.</li>
+            </ul>
+        </div>
+        <ng-template #noPersonalBoard>
+            <p>You don't have a private bingo board. You can only have one. You can <a class='green' (click)='createBingoBoard()'>[Create It]</a> now.</p>
+        </ng-template>
+    </div>
+</div>

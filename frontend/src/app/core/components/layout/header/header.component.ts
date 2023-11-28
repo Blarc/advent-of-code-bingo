@@ -4,7 +4,7 @@ import {RouterOutlet} from '@angular/router';
 
 import {Observable} from 'rxjs';
 
-import {UserDto} from '../../../api/model/userDto';
+import {UserDto} from '../../../api/model/userDto.model';
 import {AuthService} from '../../../services/auth.service';
 
 @Component({
