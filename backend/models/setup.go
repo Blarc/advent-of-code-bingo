@@ -13,13 +13,15 @@ var DB *gorm.DB
 func ConnectDatabase() {
 
 	dbHost := utils.GetEnvVariable("DB_HOST")
+	dbPort := utils.GetEnvVariable("DB_PORT")
 	dbUser := utils.GetEnvVariable("DB_USER")
 	dbPass := utils.GetEnvVariable("DB_PASS")
 	dbName := utils.GetEnvVariable("DB_NAME")
 
 	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s TimeZone=Europe/Ljubljana",
+		"host=%s port=%s user=%s password=%s dbname=%s TimeZone=Europe/Ljubljana",
 		dbHost,
+		dbPort,
 		dbUser,
 		dbPass,
 		dbName,
