@@ -1,7 +1,7 @@
 import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
 
 import {Observable, tap} from 'rxjs';
 
@@ -13,7 +13,7 @@ import {AuthService} from '../../core/services/auth.service';
     standalone: true,
     selector: 'app-bingo-boards',
     styleUrls: ['bingo-boards.page.component.scss'],
-    imports: [ReactiveFormsModule, NgIf, AsyncPipe, NgForOf, RouterLink, RouterOutlet, RouterLinkActive],
+    imports: [ReactiveFormsModule, NgIf, AsyncPipe, NgForOf, RouterModule],
     templateUrl: './bingo-boards.page.component.html'
 })
 export class BingoBoardsPageComponent implements OnInit {
@@ -23,6 +23,7 @@ export class BingoBoardsPageComponent implements OnInit {
     public user$?: Observable<UserDto | null>;
 
     constructor(
+        private router: Router,
         private authService: AuthService,
         private formBuilder: FormBuilder,
         private bingoApiService: BingoApiService
@@ -40,7 +41,11 @@ export class BingoBoardsPageComponent implements OnInit {
         const boardCode = this.bingoBoardForm.controls['boardName'].value;
         if (boardCode) {
             this.bingoApiService.joinBingoBoard(boardCode).subscribe({
-                next: user => this.authService.updateUser(user)
+                next: user => {
+                    this.bingoBoardForm.controls['boardName'].setValue('');
+                    this.authService.updateUser(user);
+                    this.router.navigate(['private-bingo-boards', boardCode]);
+                }
             });
         }
     }

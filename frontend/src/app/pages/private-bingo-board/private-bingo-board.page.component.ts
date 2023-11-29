@@ -1,9 +1,10 @@
-import {AsyncPipe, NgClass, NgForOf} from '@angular/common';
+import {AsyncPipe, NgClass, NgForOf, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 
 import {Subject} from 'rxjs';
 
+import {BingoBoardDto} from '../../core/api/model/bingoBoardDto.model';
 import {BingoCardDto} from '../../core/api/model/bingoCardDto.model';
 import {BingoApiService} from '../../core/api/service/bingo-api.service';
 import {UserCountPipe} from '../../core/pipes/user-count.pipe';
@@ -13,11 +14,12 @@ import {RefreshService} from '../../core/services/refresh.service';
     standalone: true,
     selector: 'app-private-bingo-board',
     styleUrls: ['private-bingo-board.page.component.scss'],
-    imports: [AsyncPipe, NgForOf, UserCountPipe, NgClass],
+    imports: [AsyncPipe, NgForOf, UserCountPipe, NgClass, NgIf],
     templateUrl: 'private-bingo-board.page.component.html'
 })
 export class PrivateBingoBoardPageComponent implements OnInit {
     private readonly boardUuid: string;
+    public bingoBoardSubject = new Subject<BingoBoardDto>();
     public bingoCardsSubject = new Subject<BingoCardDto[]>();
 
     constructor(
@@ -34,8 +36,10 @@ export class PrivateBingoBoardPageComponent implements OnInit {
     }
 
     private fetchBingoCards() {
-        console.log('Fetch');
-        this.bingoApiService.getBingoBoard(this.boardUuid).subscribe(board => this.bingoCardsSubject.next(board.bingo_cards));
+        this.bingoApiService.getBingoBoard(this.boardUuid).subscribe(board => {
+            this.bingoBoardSubject.next(board);
+            this.bingoCardsSubject.next([...board.bingo_cards, ...board.bingo_cards]);
+        });
     }
 
     clickBingoCard(id: string): void {

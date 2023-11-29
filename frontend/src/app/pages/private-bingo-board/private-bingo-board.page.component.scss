@@ -5,12 +5,19 @@
     --item-size: 11rem;
 }
 
+.title {
+    display: flex;
+    justify-content: center;
+}
+
 /* Bingo grid styling */
 .bingo-grid {
     display: grid;
     grid-template-columns: repeat(4, var(--item-size));
     grid-auto-rows: var(--item-size);
     justify-content: center;
+    height: 90vh;
+    overflow: auto;
 }
 
 /* Bingo item wrapper styling */
