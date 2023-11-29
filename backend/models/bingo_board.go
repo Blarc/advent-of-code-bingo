@@ -9,7 +9,7 @@ type BingoBoard struct {
 	gorm.Model
 	ID         uuid.UUID   `gorm:"type:uuid;default:gen_random_uuid()"`
 	Name       string      `json:"name"`
-	OwnerId    uuid.UUID   `gorm:"type:uuid" json:"owner_id"`
+	OwnerId    uuid.UUID   `gorm:"type:uuid;unique" json:"owner_id"`
 	Users      []User      `gorm:"many2many:user_bingo_board;" json:"users"`
 	BingoCards []BingoCard `gorm:"many2many:bingo_board_bingo_card;" json:"bingo_cards"`
 }
@@ -35,8 +35,4 @@ func (b *BingoBoard) MapToDto() BingoBoardDto {
 
 type BingoBoardId struct {
 	ID string `uri:"id" binding:"required"`
-}
-
-type CreateBingoBoardDto struct {
-	Name string `json:"name"`
 }

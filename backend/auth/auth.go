@@ -272,6 +272,7 @@ func Verifier() gin.HandlerFunc {
 		result := models.DB.
 			Preload("BingoCards").
 			Preload("BingoBoards").
+			Preload("PersonalBingoBoard").
 			First(&user, "id = ?", userUuid)
 		if result.Error != nil {
 			ctx.AbortWithStatus(http.StatusUnauthorized)

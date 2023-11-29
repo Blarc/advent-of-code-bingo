@@ -17,14 +17,11 @@ import (
 // @Produce json
 // @Success 200 {object} models.UserDto
 // @Router /bingoBoard [post]
-// @Param data body models.CreateBingoBoardDto true "Bingo Board Name"
 // @Security Token
 func CreateBingoBoard(c *gin.Context) {
-
-	var createBingoBoardDto models.CreateBingoBoardDto
-	if err := c.ShouldBindJSON(&createBingoBoardDto); err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var user = c.MustGet("user").(models.User)
+	if user.PersonalBingoBoard != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "You already have a personal bingo board"})
 		return
 	}
 
@@ -37,18 +34,16 @@ func CreateBingoBoard(c *gin.Context) {
 	})
 
 	// Create the new bingo board
-	var user = c.MustGet("user").(models.User)
 	newBoard := models.BingoBoard{
-		Name:    createBingoBoardDto.Name,
+		Name:    user.Name,
 		OwnerId: user.ID,
-		Users:   []models.User{user},
 		// Take the first 16 cards from the shuffled list
 		BingoCards: bingoCards[:16],
 	}
 	models.DB.Create(&newBoard)
 
 	// Add the new bingo board to the user
-	err := models.DB.Model(&user).Association("BingoBoards").Append(&newBoard)
+	err := models.DB.Model(&user).Association("PersonalBingoBoard").Append(&newBoard)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -81,7 +76,6 @@ func FindBingoBoard(c *gin.Context) {
 	result := models.DB.
 		First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID)
 
-	log.Printf("%v\n", bingoBoard)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
 		return
@@ -111,38 +105,35 @@ func FindBingoBoard(c *gin.Context) {
 // DeleteBingoBoard godoc
 // @Summary Delete bingo board.
 // @Schemes http
-// @Description Delete a bingo board.
+// @Description Irrevocably delete a bingo board.
 // @Tags Bingo Board
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.UserDto
 // @Router /bingoBoard/{id} [delete]
-// @Param id path string true "Bingo Board ID"
 // @Security Token
 func DeleteBingoBoard(c *gin.Context) {
 
-	var bingoBoardId models.BingoBoardId
-	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var bingoBoard models.BingoBoard
-	if err := models.DB.First(&bingoBoard, bingoBoardId.ID).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	var user = c.MustGet("user").(models.User)
-	err := models.DB.Model(&user).Association("BingoBoards").Delete(&bingoBoard)
+	if user.PersonalBingoBoard == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "You don't have a personal bingo board"})
+		return
+	}
+
+	err := models.DB.Unscoped().Model(&user.PersonalBingoBoard).Association("BingoCards").Clear()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	models.DB.Delete(&bingoBoard)
+	err = models.DB.Model(&user.PersonalBingoBoard).Association("Users").Clear()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	models.DB.Unscoped().Delete(&user.PersonalBingoBoard)
+	user.PersonalBingoBoard = nil
 	c.JSON(http.StatusOK, user.MapToDto())
 }
 

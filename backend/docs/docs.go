@@ -40,17 +40,6 @@ const docTemplate = `{
                     "Bingo Board"
                 ],
                 "summary": "Create bingo board.",
-                "parameters": [
-                    {
-                        "description": "Bingo Board Name",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.CreateBingoBoardDto"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -103,7 +92,7 @@ const docTemplate = `{
                         "Token": []
                     }
                 ],
-                "description": "Delete a bingo board.",
+                "description": "Irrevocably delete a bingo board.",
                 "consumes": [
                     "application/json"
                 ],
@@ -114,15 +103,6 @@ const docTemplate = `{
                     "Bingo Board"
                 ],
                 "summary": "Delete bingo board.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bingo Board ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -480,14 +460,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateBingoBoardDto": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "models.UserDto": {
             "type": "object",
             "properties": {
@@ -511,6 +483,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "personal_bingo_board": {
+                    "$ref": "#/definitions/models.BingoBoardDto"
                 },
                 "reddit_url": {
                     "type": "string"
