@@ -4,7 +4,6 @@ import (
 	"github.com/Blarc/advent-of-code-bingo/models"
 	"github.com/gin-gonic/gin"
 	"log"
-	"math/rand"
 	"net/http"
 )
 
@@ -27,17 +26,12 @@ func CreateBingoBoard(c *gin.Context) {
 	// Find all bingo cards
 	var bingoCards []models.BingoCard
 	models.DB.Model(&models.BingoCard{}).Find(&bingoCards)
-	// Shuffle them
-	rand.Shuffle(len(bingoCards), func(i, j int) {
-		bingoCards[i], bingoCards[j] = bingoCards[j], bingoCards[i]
-	})
 
 	// Create the new bingo board
 	newBoard := models.BingoBoard{
-		Name:    user.Name,
-		OwnerId: user.ID,
-		// Take the first 16 cards from the shuffled list
-		BingoCards: bingoCards[:16],
+		Name:       user.Name,
+		OwnerId:    user.ID,
+		BingoCards: bingoCards,
 	}
 	models.DB.Create(&newBoard)
 
