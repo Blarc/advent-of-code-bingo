@@ -1,4 +1,4 @@
-import {BingoCardDto} from './bingoCardDto';
+import {BingoCardDto} from './bingoCardDto.model';
 
 export class BingoBoardDto {
     'name': string;

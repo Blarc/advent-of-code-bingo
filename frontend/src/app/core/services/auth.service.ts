@@ -1,14 +1,16 @@
 import {Injectable, inject} from '@angular/core';
+import {Router} from '@angular/router';
 
 import {BehaviorSubject, filter, switchMap} from 'rxjs';
 
-import {UserDto} from '../api/model/userDto';
+import {UserDto} from '../api/model/userDto.model';
 import {BingoApiService} from '../api/service/bingo-api.service';
 import {CookiesService} from './cookies.service';
 import {RefreshService} from './refresh.service';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
+    private router = inject(Router);
     private cookieService = inject(CookiesService);
     private refreshService = inject(RefreshService);
     private bingoApiService = inject(BingoApiService);
@@ -39,8 +41,18 @@ export class AuthService {
         return this.userSubject.asObservable();
     }
 
+    public updateUser(user: UserDto) {
+        this.userSubject.next(user);
+    }
+
     public isAuthenticated() {
         return this.tokenSubject.value !== null && this.userSubject.value !== null;
+    }
+
+    public isTokenValid() {
+        const token = this.cookieService.getCookie('token');
+        this.tokenSubject.next(token);
+        return token;
     }
 
     public logout() {
@@ -48,5 +60,6 @@ export class AuthService {
         this.tokenSubject.next(null);
         this.userSubject.next(null);
         this.refreshService.shouldRefreshBingoCards();
+        this.router.navigate(['/']);
     }
 }

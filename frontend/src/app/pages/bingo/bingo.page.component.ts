@@ -3,8 +3,7 @@ import {Component, OnInit, inject} from '@angular/core';
 
 import {Subject} from 'rxjs';
 
-import {BingoCardDto} from '../../core/api/model/bingoCardDto';
-import {UserDto} from '../../core/api/model/userDto';
+import {BingoCardDto} from '../../core/api/model/bingoCardDto.model';
 import {BingoApiService} from '../../core/api/service/bingo-api.service';
 import {UserCountPipe} from '../../core/pipes/user-count.pipe';
 import {RefreshService} from '../../core/services/refresh.service';
@@ -20,23 +19,18 @@ export class BingoPageComponent implements OnInit {
     private refreshService = inject(RefreshService);
     private bingoApiService = inject(BingoApiService);
 
-    public user: UserDto | undefined;
     public bingoCardsSubject = new Subject<BingoCardDto[]>();
 
     ngOnInit(): void {
-        this.refreshService.onRefreshBingoCards().subscribe(() => this.bingoApiService.getAllBingoCards().subscribe(cards => this.bingoCardsSubject.next(cards)));
-        // this.bingoCardsSubject.next(this.cards);
+        this.refreshService.onRefreshBingoCards().subscribe(() => this.fetchBingoCards());
+        this.fetchBingoCards();
     }
 
     private fetchBingoCards() {
         this.bingoApiService.getAllBingoCards().subscribe(cards => this.bingoCardsSubject.next(cards));
-        // this.bingoCardsSubject.next(this.cards);
     }
 
     clickBingoCard(id: string): void {
-        this.bingoApiService.clickBingoCard(id).subscribe(res => {
-            console.log(res);
-            this.fetchBingoCards();
-        });
+        this.bingoApiService.clickBingoCard(id).subscribe(() => this.fetchBingoCards());
     }
 }

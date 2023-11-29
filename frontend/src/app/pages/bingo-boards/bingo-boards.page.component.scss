@@ -1,0 +1,44 @@
+* {
+    color: white;
+}
+
+.bingo-boards {
+    padding: 1rem;
+}
+
+.subsection {
+    padding-bottom: 2rem;
+}
+
+input {
+    background-color: #0f0f23;
+    border: 1px solid white;
+    line-height: .8rem;
+    margin-right: 1rem;
+}
+
+ul {
+    padding: 0;
+    margin-bottom: 0;
+    list-style-type: none;
+}
+
+a.green {
+    cursor: pointer;
+    color: #009900;
+    text-decoration: none;
+
+    &:hover {
+        color: #99ff99;
+    }
+}
+
+span.green {
+    cursor: pointer;
+    color: #009900;
+    margin-right: 1em;
+
+    &:hover {
+        color: #99ff99;
+    }
+}

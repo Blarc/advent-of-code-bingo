@@ -1,6 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
-import {BingoCardDto} from '../api/model/bingoCardDto';
+import {BingoCardDto} from '../api/model/bingoCardDto.model';
 
 @Pipe({
     standalone: true,
