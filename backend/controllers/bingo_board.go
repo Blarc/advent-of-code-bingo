@@ -59,7 +59,7 @@ func CreateBingoBoard(c *gin.Context) {
 // @Tags Bingo Board
 // @Accept json
 // @Produce json
-// @Success 200 {object} string
+// @Success 200 {object} models.BingoBoardDto
 // @Router /bingoBoard/{id} [get]
 // @Param id path string true "Bingo Board ID"
 // @Security Token
@@ -73,24 +73,20 @@ func FindBingoBoard(c *gin.Context) {
 
 	// Find the bingo board by the first 16 characters of the ID
 	var bingoBoard models.BingoBoard
-	result := models.DB.
-		First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID)
-
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
+	if err := models.DB.First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	// Find all bingo cards for the board and count how many users have them
 	var bingoCards []models.BingoCardDto
-	result = models.DB.Table("bingo_cards").
+	result := models.DB.Table("bingo_cards").
 		Select("bingo_cards.id, bingo_cards.description, count(user_bingo_card.user_id) as user_count").
 		Joins("left join bingo_board_bingo_card ON bingo_board_bingo_card.bingo_card_id = bingo_cards.id").
 		Joins("left join user_bingo_card ON user_bingo_card.bingo_card_id = bingo_cards.id").
 		Group("bingo_board_bingo_card.bingo_board_id, bingo_cards.id").
 		Find(&bingoCards, "substring(bingo_board_bingo_card.bingo_board_id::text, 1, 16) = ?", bingoBoardId.ID)
 
-	log.Printf("%v\n", bingoCards)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
 		return
@@ -144,7 +140,7 @@ func DeleteBingoBoard(c *gin.Context) {
 // @Tags Bingo Board
 // @Accept json
 // @Produce json
-// @Success 200 {object} string
+// @Success 200 {object} models.UserDto
 // @Router /bingoBoard/{id}/join [post]
 // @Param id path string true "Bingo Board ID"
 // @Security Token
@@ -180,7 +176,7 @@ func JoinBingoBoard(c *gin.Context) {
 // @Tags Bingo Board
 // @Accept json
 // @Produce json
-// @Success 200 {object} string
+// @Success 200 {object} models.UserDto
 // @Router /bingoBoard/{id}/leave [delete]
 // @Param id path string true "Bingo Board ID"
 // @Security Token
@@ -221,7 +217,7 @@ func LeaveBingoBoard(c *gin.Context) {
 // @Tags Bingo Board
 // @Accept json
 // @Produce json
-// @Success 200 {object} string
+// @Success 200 {object} models.BingoBoardDto
 // @Router /bingoBoard/{id}/addBingoCard [put]
 // @Param id path string true "Bingo Board ID"
 // @Param data body models.BingoCardId true "Bingo Card UUID"
@@ -234,16 +230,16 @@ func AddBingoCard(c *gin.Context) {
 		return
 	}
 
-	// Find the bingo board by the first 16 characters of the ID
-	var bingoBoard models.BingoBoard
-	if err := models.DB.First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID).Error; err != nil {
+	var bingoCardId models.BingoCardId
+	if err := c.ShouldBindJSON(&bingoCardId); err != nil {
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var bingoCardId models.BingoCardId
-	if err := c.ShouldBindJSON(&bingoCardId); err != nil {
-		log.Println(err.Error())
+	// Find the bingo board by the first 16 characters of the ID
+	var bingoBoard models.BingoBoard
+	if err := models.DB.First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -260,7 +256,24 @@ func AddBingoCard(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, bingoBoard.MapToDto())
+	// Find all bingo cards for the board and count how many users have them
+	var bingoCards []models.BingoCardDto
+	result := models.DB.Table("bingo_cards").
+		Select("bingo_cards.id, bingo_cards.description, count(user_bingo_card.user_id) as user_count").
+		Joins("left join bingo_board_bingo_card ON bingo_board_bingo_card.bingo_card_id = bingo_cards.id").
+		Joins("left join user_bingo_card ON user_bingo_card.bingo_card_id = bingo_cards.id").
+		Group("bingo_board_bingo_card.bingo_board_id, bingo_cards.id").
+		Find(&bingoCards, "substring(bingo_board_bingo_card.bingo_board_id::text, 1, 16) = ?", bingoBoardId.ID)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	// Create the DTO
+	bingoBoardDto := bingoBoard.MapToDto()
+	bingoBoardDto.BingoCards = bingoCards
+	c.JSON(http.StatusOK, bingoBoardDto)
 }
 
 // RemoveBingoCard godoc
@@ -270,7 +283,7 @@ func AddBingoCard(c *gin.Context) {
 // @Tags Bingo Board
 // @Accept json
 // @Produce json
-// @Success 200 {object} string
+// @Success 200 {object} models.BingoBoardDto
 // @Router /bingoBoard/{id}/removeBingoCard [put]
 // @Param id path string true "Bingo Board ID"
 // @Param data body models.BingoCardId true "Bingo Card UUID"
@@ -283,17 +296,17 @@ func RemoveBingoCard(c *gin.Context) {
 		return
 	}
 
-	// Find the bingo board by the first 16 characters of the ID
-	var bingoBoard models.BingoBoard
-	if err := models.DB.First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	var bingoCardId models.BingoCardId
 	if err := c.ShouldBindJSON(&bingoCardId); err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Find the bingo board by the first 16 characters of the ID
+	var bingoBoard models.BingoBoard
+	if err := models.DB.First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
@@ -309,5 +322,22 @@ func RemoveBingoCard(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, bingoBoard.MapToDto())
+	// Find all bingo cards for the board and count how many users have them
+	var bingoCards []models.BingoCardDto
+	result := models.DB.Table("bingo_cards").
+		Select("bingo_cards.id, bingo_cards.description, count(user_bingo_card.user_id) as user_count").
+		Joins("left join bingo_board_bingo_card ON bingo_board_bingo_card.bingo_card_id = bingo_cards.id").
+		Joins("left join user_bingo_card ON user_bingo_card.bingo_card_id = bingo_cards.id").
+		Group("bingo_board_bingo_card.bingo_board_id, bingo_cards.id").
+		Find(&bingoCards, "substring(bingo_board_bingo_card.bingo_board_id::text, 1, 16) = ?", bingoBoardId.ID)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	// Create the DTO
+	bingoBoardDto := bingoBoard.MapToDto()
+	bingoBoardDto.BingoCards = bingoCards
+	c.JSON(http.StatusOK, bingoBoardDto)
 }

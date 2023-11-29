@@ -75,7 +75,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.BingoBoardDto"
                         }
                     }
                 }
@@ -147,7 +147,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.BingoBoardDto"
                         }
                     }
                 }
@@ -184,7 +184,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.UserDto"
                         }
                     }
                 }
@@ -221,7 +221,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.UserDto"
                         }
                     }
                 }
@@ -267,7 +267,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.BingoBoardDto"
                         }
                     }
                 }

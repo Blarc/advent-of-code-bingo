@@ -119,7 +119,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/models.BingoBoardDto'
       security:
       - Token: []
       summary: Get bingo board.
@@ -148,7 +148,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/models.BingoBoardDto'
       security:
       - Token: []
       summary: Add bingo card.
@@ -171,7 +171,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/models.UserDto'
       security:
       - Token: []
       summary: Join bingo board.
@@ -194,7 +194,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/models.UserDto'
       security:
       - Token: []
       summary: Leave bingo board.
@@ -223,7 +223,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/models.BingoBoardDto'
       security:
       - Token: []
       summary: Remove bingo card.
