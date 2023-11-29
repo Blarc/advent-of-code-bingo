@@ -15,7 +15,6 @@ func init() {
 
 // FindMe godoc
 // @Summary Get user information.
-// @Schemes http
 // @Description Get information about the user that is currently logged in.
 // @Tags User
 // @Accept json
@@ -31,7 +30,6 @@ func FindMe(c *gin.Context) {
 
 // ClickBingoCard godoc
 // @Summary Click bingo card.
-// @Schemes http
 // @Description Add or remove bingo card from user.
 // @Tags User
 // @Accept json

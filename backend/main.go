@@ -1,7 +1,9 @@
 package main
 
 import (
+	"github.com/Blarc/advent-of-code-bingo/docs"
 	"github.com/Blarc/advent-of-code-bingo/models"
+	"github.com/Blarc/advent-of-code-bingo/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
@@ -18,7 +20,6 @@ import (
 // @license.name  GNU General Public License v3.0
 // @license.url   https://www.gnu.org/licenses/gpl-3.0.html
 
-// @host      localhost:8080
 // @BasePath  /api/v1
 // @securityDefinitions.apikey Token
 // @in header
@@ -30,6 +31,8 @@ func main() {
 		log.Println("No .env file found.")
 	}
 
+	docs.SwaggerInfo.Host = utils.GetEnvVariable("HOST")
+	docs.SwaggerInfo.Schemes = []string{utils.GetEnvVariable("SCHEME")}
 	models.ConnectDatabase()
 
 	app := App{

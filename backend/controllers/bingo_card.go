@@ -10,7 +10,6 @@ import (
 
 // FindBingoCards godoc
 // @Summary Get all bingo cards.
-// @Schemes http
 // @Description Get all bingo cards.
 // @Tags Bingo Card
 // @Accept json
@@ -57,7 +56,6 @@ type CreateBingoCardDto struct {
 
 // CreateBingoCard godoc
 // @Summary Create a bingo card.
-// @Schemes http
 // @Description Create a bingo card.
 // @Tags Bingo Card
 // @Accept json

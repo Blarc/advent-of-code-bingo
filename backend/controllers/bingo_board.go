@@ -10,7 +10,6 @@ import (
 
 // CreateBingoBoard godoc
 // @Summary Create bingo board.
-// @Schemes http
 // @Description Create a new bingo board with random bingo cards.
 // @Tags Bingo Board
 // @Accept json
@@ -54,7 +53,6 @@ func CreateBingoBoard(c *gin.Context) {
 
 // FindBingoBoard godoc
 // @Summary Get bingo board.
-// @Schemes http
 // @Description Get a bingo board.
 // @Tags Bingo Board
 // @Accept json
@@ -100,7 +98,6 @@ func FindBingoBoard(c *gin.Context) {
 
 // DeleteBingoBoard godoc
 // @Summary Delete bingo board.
-// @Schemes http
 // @Description Irrevocably delete a bingo board.
 // @Tags Bingo Board
 // @Accept json
@@ -135,7 +132,6 @@ func DeleteBingoBoard(c *gin.Context) {
 
 // JoinBingoBoard godoc
 // @Summary Join bingo board.
-// @Schemes http
 // @Description Join a bingo board.
 // @Tags Bingo Board
 // @Accept json
@@ -171,7 +167,6 @@ func JoinBingoBoard(c *gin.Context) {
 
 // LeaveBingoBoard godoc
 // @Summary Leave bingo board.
-// @Schemes http
 // @Description Leave a bingo board.
 // @Tags Bingo Board
 // @Accept json
@@ -212,7 +207,6 @@ func LeaveBingoBoard(c *gin.Context) {
 
 // AddBingoCard godoc
 // @Summary Add bingo card.
-// @Schemes http
 // @Description Add a bingo card to a bingo board.
 // @Tags Bingo Board
 // @Accept json
@@ -278,7 +272,6 @@ func AddBingoCard(c *gin.Context) {
 
 // RemoveBingoCard godoc
 // @Summary Remove bingo card.
-// @Schemes http
 // @Description Remove a bingo card from a bingo board.
 // @Tags Bingo Board
 // @Accept json
