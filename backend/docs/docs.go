@@ -441,9 +441,6 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "selected": {
-                    "type": "boolean"
-                },
                 "user_count": {
                     "type": "integer"
                 }

@@ -16,7 +16,6 @@ type BingoCardDto struct {
 	ID          uuid.UUID `json:"id"`
 	Description string    `json:"description"`
 	UserCount   uint      `json:"user_count"`
-	Selected    bool      `json:"selected"`
 }
 
 func (b *BingoCard) MapToDto() BingoCardDto {

@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"github.com/Blarc/advent-of-code-bingo/auth"
 	"github.com/Blarc/advent-of-code-bingo/models"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -25,27 +23,6 @@ func FindBingoCards(c *gin.Context) {
 		Group("bingo_cards.id").
 		Where("bingo_cards.public = true").
 		Scan(&bingoCards)
-
-	userUuid := auth.GetUserUuidFromHeader(c)
-	log.Println(userUuid)
-	if userUuid != nil {
-
-		var user models.User
-		result := models.DB.Preload("BingoCards").First(&user, "id = ?", userUuid)
-		if result.Error != nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		// TODO: Optimize this
-		for i, bingoCard := range bingoCards {
-			for _, selectedBingoCard := range user.BingoCards {
-				if bingoCard.ID == selectedBingoCard.ID {
-					bingoCards[i].Selected = true
-				}
-			}
-		}
-	}
 
 	c.JSON(http.StatusOK, bingoCards)
 }
