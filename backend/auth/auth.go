@@ -26,8 +26,8 @@ import (
 )
 
 const (
-	stateCookieId = "oauth_state"
-	tokenCookieId = "token"
+	StateCookieId = "oauth_state"
+	TokenCookieId = "token"
 )
 
 type OAuth struct {
@@ -47,7 +47,7 @@ func (o *OAuth) LoginRedirectHandler(ctx *gin.Context) {
 
 func (o *OAuth) GetToken(ctx *gin.Context) *oauth2.Token {
 	// Read oauthState from Cookie
-	oauthState, _ := ctx.Cookie(stateCookieId)
+	oauthState, _ := ctx.Cookie(StateCookieId)
 
 	/*
 		AuthCodeURL receive state that is a token to protect the user from CSRF attacks.
@@ -107,7 +107,7 @@ func GithubCallbackHandler(ctx *gin.Context, config *OAuth) {
 		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to encrypt user id: %v", err))
 		return
 	}
-	ctx.SetCookie(tokenCookieId, encryptedUuid, math.MaxInt32, "/", ctx.Request.Host, true, false)
+	ctx.SetCookie(TokenCookieId, encryptedUuid, math.MaxInt32, "/", ctx.Request.Host, true, false)
 	ctx.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
@@ -143,7 +143,7 @@ func GoogleCallbackHandler(ctx *gin.Context, config *OAuth) {
 		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to encrypt user id: %v", err))
 		return
 	}
-	ctx.SetCookie(tokenCookieId, encryptedUuid, math.MaxInt32, "/", ctx.Request.Host, true, false)
+	ctx.SetCookie(TokenCookieId, encryptedUuid, math.MaxInt32, "/", ctx.Request.Host, true, false)
 	ctx.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
@@ -200,7 +200,7 @@ func RedditCallbackHandler(ctx *gin.Context, config *OAuth) {
 		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("Failed to encrypt user id: %v", err))
 		return
 	}
-	ctx.SetCookie(tokenCookieId, encryptedUuid, math.MaxInt32, "/", ctx.Request.Host, true, false)
+	ctx.SetCookie(TokenCookieId, encryptedUuid, math.MaxInt32, "/", ctx.Request.Host, true, false)
 	ctx.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
@@ -210,7 +210,7 @@ func generateStateOauthCookie(ctx *gin.Context) string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	state := base64.URLEncoding.EncodeToString(b)
-	cookie := http.Cookie{Name: stateCookieId, Value: state, Expires: expiration}
+	cookie := http.Cookie{Name: StateCookieId, Value: state, Expires: expiration}
 	http.SetCookie(ctx.Writer, &cookie)
 
 	return state

@@ -5,7 +5,7 @@
             <ul><li><a href="/about">[About]</a></li></ul>
             <ul *ngIf='(user | async)'><li><a href="/private-bingo-boards">[Private bingo boards]</a></li></ul>
             <ul *ngIf='(user | async) === null'><li><a href="/login">[Log in]</a></li></ul>
-            <ul *ngIf='(user | async)'><li><a (click)="logout()">[Log out]</a></li></ul>
+            <ul *ngIf='(user | async)'><li><a href="/api/v1/logout">[Log out]</a></li></ul>
             <ul *ngIf='(user | async)'><li>{{(user | async)?.name}}</li></ul>
         </nav>
     </div>

@@ -52,11 +52,4 @@ export class AuthService {
         this.tokenSubject.next(token);
         return token;
     }
-
-    public logout() {
-        this.cookieService.deleteCookie('token');
-        this.tokenSubject.next(null);
-        this.userSubject.next(null);
-        this.router.navigate(['/']);
-    }
 }

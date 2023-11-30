@@ -22,8 +22,4 @@ export class HeaderComponent implements OnInit {
     ngOnInit() {
         this.user = this.authService.userSubject$;
     }
-
-    public logout() {
-        this.authService.logout();
-    }
 }

@@ -101,6 +101,10 @@ func (app *App) start() {
 	apiPublic.GET("/auth/reddit/callback", func(context *gin.Context) {
 		auth.RedditCallbackHandler(context, &redditOAuth)
 	})
+	apiPublic.GET("/logout", func(ctx *gin.Context) {
+		ctx.SetCookie(auth.TokenCookieId, "", -1, "/", ctx.Request.Host, true, false)
+		ctx.Redirect(http.StatusTemporaryRedirect, "/")
+	})
 	apiPublic.GET("/bingoCards", controllers.FindBingoCards)
 
 	// Protected API
