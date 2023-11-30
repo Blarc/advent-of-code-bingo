@@ -7,3 +7,12 @@ body {
     background: radial-gradient(ellipse at bottom, #0f0f23 0%, #090a0f 100%);
     overflow: hidden;
 }
+
+.bingo-grid {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.bingo-grid::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}
