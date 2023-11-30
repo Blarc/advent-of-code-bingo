@@ -92,7 +92,7 @@ func GithubCallbackHandler(ctx *gin.Context, config *OAuth) {
 	var user models.User
 	result := models.DB.Where(models.User{GithubID: githubId}).Assign(models.User{
 		GithubID:  githubId,
-		Name:      *githubUserData.Name,
+		Name:      *githubUserData.Login,
 		AvatarURL: *githubUserData.AvatarURL,
 		GithubURL: *githubUserData.HTMLURL,
 	}).FirstOrCreate(&user)
