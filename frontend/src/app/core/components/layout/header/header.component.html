@@ -6,7 +6,8 @@
             <ul *ngIf='(user | async)'><li><a href="/private-bingo-boards">[Private bingo boards]</a></li></ul>
             <ul *ngIf='(user | async) === null'><li><a href="/login">[Log in]</a></li></ul>
             <ul *ngIf='(user | async)'><li><a href="/api/v1/logout">[Log out]</a></li></ul>
-            <ul *ngIf='(user | async)'><li>{{(user | async)?.name}}</li></ul>
+            <ul *ngIf='(user | async)'><li class='name'>{{(user | async)?.name}}</li></ul>
+            <ul *ngIf='(user | async)?.bingo_cards && (user | async)!.bingo_cards.length > 0'><li class='stars'>{{(user | async)?.bingo_cards?.length}}*</li></ul>
         </nav>
     </div>
 </header>

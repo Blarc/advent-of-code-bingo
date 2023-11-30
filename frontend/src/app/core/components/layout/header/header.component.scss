@@ -31,8 +31,6 @@ header {
         }
 
         ul li {
-            color: white;
-
             a {
                 cursor: pointer;
                 text-decoration: none;
@@ -46,4 +44,12 @@ header {
             color: #99ff99;
         }
     }
+}
+
+.name {
+    color: white;
+}
+
+.stars {
+    color: #ffff66;
 }
