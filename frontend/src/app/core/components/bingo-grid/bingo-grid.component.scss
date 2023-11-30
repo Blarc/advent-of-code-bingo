@@ -8,11 +8,23 @@
 /* Bingo grid styling */
 .bingo-grid {
     display: grid;
-    grid-template-columns: repeat(4, var(--item-size));
+    grid-template-columns: repeat(6, var(--item-size));
     grid-auto-rows: var(--item-size);
     justify-content: center;
-    height: 90vh;
+    height: 90%;
     overflow: auto;
+
+    // For screen sizes less than 1100px
+    @media only screen and (max-width: 1100px) {
+        grid-template-columns: repeat(4, var(--item-size));
+    }
+
+    // For mobile phone screen sizes
+    @media only screen and (max-width: 600px) {
+        grid-template-columns: repeat(2, var(--item-size));
+        height: 80%;
+        overflow: auto;
+    }
 }
 
 /* Bingo item wrapper styling */
