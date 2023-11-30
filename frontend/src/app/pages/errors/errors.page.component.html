@@ -1,0 +1,4 @@
+<div>
+    <p *ngIf='error'>Whoops! It seems the secret code you entered to join the leaderboard isn't quite right. No worries, though! Every adventurer makes a wrong turn now and then. Double-check the code, and let's ensure we get you properly signed in to conquer the leaderboard realms! <span class='green' [routerLink]="'/private-bingo-boards'">[Back]</span></p>
+    <p *ngIf='!error'>Ahoy there! It seems you've stumbled upon uncharted waters. Fear not, lost soul! This isn't the destination you seek. Let's navigate you back to familiar shores where your journey began. <span class='green' [routerLink]="'/private-bingo-boards'">[Back]</span></p>
+</div>

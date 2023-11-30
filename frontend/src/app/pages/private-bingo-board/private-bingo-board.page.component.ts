@@ -1,6 +1,6 @@
 import {AsyncPipe, NgClass, NgForOf, NgIf} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 import {Subject, tap} from 'rxjs';
 
@@ -26,6 +26,7 @@ export class PrivateBingoBoardPageComponent implements OnInit {
     public bingoCardsSubject = new Subject<BingoCardDto[]>();
 
     constructor(
+        private router: Router,
         private route: ActivatedRoute,
         private authService: AuthService,
         private bingoApiService: BingoApiService
@@ -45,9 +46,12 @@ export class PrivateBingoBoardPageComponent implements OnInit {
     }
 
     private fetchBingoCards() {
-        this.bingoApiService.getBingoBoard(this.boardUuid).subscribe(board => {
-            this.bingoBoardSubject.next(board);
-            this.bingoCardsSubject.next(this.bingoCardsWithSelection(board.bingo_cards));
+        this.bingoApiService.getBingoBoard(this.boardUuid).subscribe({
+            next: board => {
+                this.bingoBoardSubject.next(board);
+                this.bingoCardsSubject.next(this.bingoCardsWithSelection(board.bingo_cards));
+            },
+            error: () => this.router.navigate(['error'], {state: {error: true}})
         });
     }
 

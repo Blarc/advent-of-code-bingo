@@ -1,0 +1,19 @@
+* {
+    color: white;
+}
+
+div {
+    padding: 1rem;
+    max-width: 45rem;
+}
+
+.green {
+    cursor: pointer;
+    color: #009900;
+    text-decoration: none;
+
+    &:hover {
+        color: #99ff99;
+    }
+}
+

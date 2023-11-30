@@ -5,6 +5,7 @@ import {authGuard} from './core/guards/auth.guard';
 import {AboutPageComponent} from './pages/about/about.page.component';
 import {BingoBoardsPageComponent} from './pages/bingo-boards/bingo-boards.page.component';
 import {BingoPageComponent} from './pages/bingo/bingo.page.component';
+import {ErrorsPageComponent} from './pages/errors/errors.page.component';
 import {LoginPageComponent} from './pages/login/login.page.component';
 import {PrivateBingoBoardPageComponent} from './pages/private-bingo-board/private-bingo-board.page.component';
 
@@ -30,6 +31,10 @@ export const appRoutes: Routes = [
                 path: 'private-bingo-boards/:uuid',
                 component: PrivateBingoBoardPageComponent,
                 canActivate: [authGuard]
+            },
+            {
+                path: 'error',
+                component: ErrorsPageComponent
             },
             {
                 path: 'login',

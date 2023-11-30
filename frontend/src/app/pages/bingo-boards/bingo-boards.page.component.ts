@@ -45,7 +45,8 @@ export class BingoBoardsPageComponent implements OnInit {
                     this.bingoBoardForm.controls['boardName'].setValue('');
                     this.authService.updateUser(user);
                     this.router.navigate(['private-bingo-boards', boardCode]);
-                }
+                },
+                error: () => this.router.navigate(['error'], {state: {error: true}})
             });
         }
     }
