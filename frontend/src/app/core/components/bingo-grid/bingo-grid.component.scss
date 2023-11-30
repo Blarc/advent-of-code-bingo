@@ -11,6 +11,8 @@
     grid-template-columns: repeat(4, var(--item-size));
     grid-auto-rows: var(--item-size);
     justify-content: center;
+    height: 90vh;
+    overflow: auto;
 }
 
 /* Bingo item wrapper styling */

@@ -7,6 +7,7 @@ import {Subject} from 'rxjs';
 import {BingoBoardDto} from '../../core/api/model/bingoBoardDto.model';
 import {BingoCardDto} from '../../core/api/model/bingoCardDto.model';
 import {BingoApiService} from '../../core/api/service/bingo-api.service';
+import {BingoGridComponent} from '../../core/components/bingo-grid/bingo-grid.component';
 import {UserCountPipe} from '../../core/pipes/user-count.pipe';
 import {RefreshService} from '../../core/services/refresh.service';
 
@@ -14,7 +15,7 @@ import {RefreshService} from '../../core/services/refresh.service';
     standalone: true,
     selector: 'app-private-bingo-board',
     styleUrls: ['private-bingo-board.page.component.scss'],
-    imports: [AsyncPipe, NgForOf, UserCountPipe, NgClass, NgIf],
+    imports: [AsyncPipe, NgForOf, UserCountPipe, NgClass, NgIf, BingoGridComponent],
     templateUrl: 'private-bingo-board.page.component.html'
 })
 export class PrivateBingoBoardPageComponent implements OnInit {
@@ -31,18 +32,14 @@ export class PrivateBingoBoardPageComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.refreshService.onRefreshBingoCards().subscribe(() => this.fetchBingoCards());
         this.fetchBingoCards();
+        this.refreshService.onRefreshBingoCards().subscribe(() => this.fetchBingoCards());
     }
 
     private fetchBingoCards() {
         this.bingoApiService.getBingoBoard(this.boardUuid).subscribe(board => {
             this.bingoBoardSubject.next(board);
-            this.bingoCardsSubject.next([...board.bingo_cards, ...board.bingo_cards]);
+            this.bingoCardsSubject.next(board.bingo_cards);
         });
-    }
-
-    clickBingoCard(id: string): void {
-        this.bingoApiService.clickBingoCard(id).subscribe(() => this.fetchBingoCards());
     }
 }
