@@ -46,17 +46,17 @@ export class PrivateBingoBoardPageComponent implements OnInit {
 
     private fetchBingoCards() {
         this.bingoApiService.getBingoBoard(this.boardUuid).subscribe(board => {
-            if (this.user && this.user.bingo_cards) {
-                for (const card of board.bingo_cards) {
-                    for (const userCard of this.user.bingo_cards) {
-                        if (card.id === userCard.id) {
-                            card.selected = true;
-                        }
-                    }
-                }
-            }
             this.bingoBoardSubject.next(board);
-            this.bingoCardsSubject.next(board.bingo_cards);
+            this.bingoCardsSubject.next(this.bingoCardsWithSelection(board.bingo_cards));
+        });
+    }
+
+    private bingoCardsWithSelection(cards: BingoCardDto[]): BingoCardDto[] {
+        return cards.map(card => {
+            if (this.user?.bingo_cards && this.user?.bingo_cards.some(userCard => userCard.id === card.id)) {
+                return {...card, selected: true};
+            }
+            return card;
         });
     }
 }

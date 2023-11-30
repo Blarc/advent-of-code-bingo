@@ -35,17 +35,15 @@ export class BingoPageComponent implements OnInit {
     }
 
     private fetchBingoCards() {
-        this.bingoApiService.getAllBingoCards().subscribe(cards => {
-            if (this.user && this.user.bingo_cards) {
-                for (const card of cards) {
-                    for (const userCard of this.user.bingo_cards) {
-                        if (card.id === userCard.id) {
-                            card.selected = true;
-                        }
-                    }
-                }
+        this.bingoApiService.getAllBingoCards().subscribe(cards => this.bingoCardsSubject.next(this.bingoCardsWithSelection(cards)));
+    }
+
+    private bingoCardsWithSelection(cards: BingoCardDto[]): BingoCardDto[] {
+        return cards.map(card => {
+            if (this.user?.bingo_cards && this.user?.bingo_cards.some(userCard => userCard.id === card.id)) {
+                return {...card, selected: true};
             }
-            this.bingoCardsSubject.next(cards);
+            return card;
         });
     }
 }
