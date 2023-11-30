@@ -6,7 +6,7 @@ import {Subject} from 'rxjs';
 import {BingoCardDto} from '../../api/model/bingoCardDto.model';
 import {BingoApiService} from '../../api/service/bingo-api.service';
 import {UserCountPipe} from '../../pipes/user-count.pipe';
-import {RefreshService} from '../../services/refresh.service';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
     standalone: true,
@@ -16,12 +16,15 @@ import {RefreshService} from '../../services/refresh.service';
     templateUrl: 'bingo-grid.component.html'
 })
 export class BingoGridComponent {
-    private refreshService = inject(RefreshService);
+    private authService = inject(AuthService);
     private bingoApiService = inject(BingoApiService);
 
     @Input() bingoCards = new Subject<BingoCardDto[]>();
 
     public clickBingoCard(id: string): void {
-        this.bingoApiService.clickBingoCard(id).subscribe(() => this.refreshService.shouldRefreshBingoCards());
+        this.bingoApiService.clickBingoCard(id).subscribe(user => {
+            this.authService.updateUser(user);
+            // this.refreshService.shouldRefreshBingoCards();
+        });
     }
 }
