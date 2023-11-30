@@ -36,7 +36,7 @@ export class BingoPageComponent implements OnInit {
 
     private fetchBingoCards() {
         this.bingoApiService.getAllBingoCards().subscribe(cards => {
-            if (this.user) {
+            if (this.user && this.user.bingo_cards) {
                 for (const card of cards) {
                     for (const userCard of this.user.bingo_cards) {
                         if (card.id === userCard.id) {
