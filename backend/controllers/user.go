@@ -68,7 +68,7 @@ func ClickBingoCard(c *gin.Context) {
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			}
-			c.JSON(http.StatusOK, user)
+			c.JSON(http.StatusOK, user.MapToDto())
 			return
 		}
 	}
