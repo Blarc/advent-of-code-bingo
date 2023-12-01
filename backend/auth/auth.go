@@ -273,6 +273,7 @@ func Verifier() gin.HandlerFunc {
 			Preload("BingoCards").
 			Preload("BingoBoards", "owner_id != ?", userUuid).
 			Preload("PersonalBingoBoard").
+			Preload("PersonalBingoBoard.Users").
 			First(&user, "id = ?", userUuid)
 		if result.Error != nil {
 			ctx.AbortWithStatus(http.StatusUnauthorized)

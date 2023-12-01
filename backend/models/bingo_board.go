@@ -18,6 +18,7 @@ type BingoBoardDto struct {
 	ShortUUID  string         `gorm:"size:16" json:"short_uuid"`
 	Name       string         `json:"name"`
 	BingoCards []BingoCardDto `json:"bingo_cards"`
+	Users      []UserDto      `json:"users"`
 }
 
 func (b *BingoBoard) MapToDto() BingoBoardDto {
@@ -26,10 +27,16 @@ func (b *BingoBoard) MapToDto() BingoBoardDto {
 		bingoCardDtos = append(bingoCardDtos, bingoCard.MapToDto())
 	}
 
+	var usersDtos []UserDto
+	for _, user := range b.Users {
+		usersDtos = append(usersDtos, user.MapToDto())
+	}
+
 	return BingoBoardDto{
 		ShortUUID:  b.ID.String()[:16],
 		Name:       b.Name,
 		BingoCards: bingoCardDtos,
+		Users:      usersDtos,
 	}
 }
 

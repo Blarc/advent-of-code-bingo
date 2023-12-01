@@ -17,6 +17,10 @@ definitions:
         type: string
       short_uuid:
         type: string
+      users:
+        items:
+          $ref: '#/definitions/models.UserDto'
+        type: array
     type: object
   models.BingoCardDto:
     properties:

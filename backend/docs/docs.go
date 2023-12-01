@@ -429,6 +429,12 @@ const docTemplate = `{
                 },
                 "short_uuid": {
                     "type": "string"
+                },
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserDto"
+                    }
                 }
             }
         },

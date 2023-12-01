@@ -66,7 +66,7 @@ func FindBingoBoard(c *gin.Context) {
 
 	// Find the bingo board by the first 16 characters of the ID
 	var bingoBoard models.BingoBoard
-	if err := models.DB.First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID).Error; err != nil {
+	if err := models.DB.Preload("Users").First(&bingoBoard, "substring(id::text, 1, 16) = ?", bingoBoardId.ID).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
