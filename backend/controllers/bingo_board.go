@@ -74,17 +74,9 @@ func FindBingoBoard(c *gin.Context) {
 	}
 
 	// Find all bingo cards for the board and count how many users have them
-	var bingoCards []models.BingoCardDto
-	result := models.DB.Table("bingo_board_bingo_card").
-		Select("bingo_cards.id, bingo_cards.description, count(distinct user_id) as user_count").
-		Joins("left join bingo_cards ON bingo_cards.id = bingo_board_bingo_card.bingo_card_id").
-		Joins("left join user_bingo_card ON user_bingo_card.bingo_card_id = bingo_board_bingo_card.bingo_card_id AND user_bingo_card.user_id IN (SELECT user_id FROM user_bingo_board WHERE substring(bingo_board_id::text, 1, 16) = ?)", bingoBoardId.ID).
-		Where("substring(bingo_board_bingo_card.bingo_board_id::text, 1, 16) = ?", bingoBoardId.ID).
-		Group("bingo_cards.id").
-		Scan(&bingoCards)
-
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
+	bingoCards, err := bingoBoardRepo.GetBingoCardsWithCount(bingoBoardId.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
