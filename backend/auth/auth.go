@@ -271,7 +271,7 @@ func Verifier() gin.HandlerFunc {
 		var user models.User
 		result := models.DB.
 			Preload("BingoCards").
-			Preload("BingoBoards").
+			Preload("BingoBoards", "owner_id != ?", userUuid).
 			Preload("PersonalBingoBoard").
 			First(&user, "id = ?", userUuid)
 		if result.Error != nil {
