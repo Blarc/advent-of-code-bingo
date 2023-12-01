@@ -31,3 +31,6 @@ INSERT INTO public.bingo_cards (description, public) VALUES ('Resort to a constr
 INSERT INTO public.bingo_cards (description, public) VALUES ('Use eval to decode a string or evaluate an expression.', true);
 INSERT INTO public.bingo_cards (description, public) VALUES ('All your variables are named after one of the Yule Lads.', true);
 INSERT INTO public.bingo_cards (description, public) VALUES ('You have a solution that does not work correctly with the sample input, but does work with the actual input.', true);
+INSERT INTO public.bingo_cards (description, public) VALUES ('Solve a task in under 10 minutes.', true);
+INSERT INTO public.bingo_cards (description, public) VALUES ('Solve a task with a language you''ve never used before.', true);
+INSERT INTO public.bingo_cards (description, public) VALUES ('Misunderstand the assignment.', true);
