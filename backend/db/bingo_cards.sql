@@ -2,7 +2,7 @@ INSERT INTO public.bingo_cards (description, public) VALUES ('Attend an AoC even
 INSERT INTO public.bingo_cards (description, public) VALUES ('Solve a problem after day 10.', true);
 INSERT INTO public.bingo_cards (description, public) VALUES ('Solve a task before 8 am.', true);
 INSERT INTO public.bingo_cards (description, public) VALUES ('Use test driven development to solve a task.', true);
-INSERT INTO public.bingo_cards (description, public) VALUES ('Refactor code from and earlier day.', true);
+INSERT INTO public.bingo_cards (description, public) VALUES ('Refactor code from an earlier day.', true);
 INSERT INTO public.bingo_cards (description, public) VALUES ('Finish 15 days.', true);
 INSERT INTO public.bingo_cards (description, public) VALUES ('Share an AoC meme with a co-worker.', true);
 INSERT INTO public.bingo_cards (description, public) VALUES ('Solve a problem using pair programming.', true);
