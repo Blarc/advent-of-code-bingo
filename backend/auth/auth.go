@@ -279,7 +279,7 @@ func Verifier() gin.HandlerFunc {
 			return
 		}
 
-		log.Printf("User successfully logged in: %+v\n", user)
+		log.Printf("User successfully logged in: %s\n", user.ID)
 		ctx.Set("user", user)
 		ctx.Next()
 	}
