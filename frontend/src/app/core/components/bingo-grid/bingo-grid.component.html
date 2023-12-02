@@ -1,6 +1,6 @@
 <div class="bingo-grid">
     <div class="bingo-item-wrapper" *ngFor='let card of (bingoCards | async)'>
-        <div [ngClass]='card.selected ?  "bingo-item selected" : "bingo-item"' (click)='clickBingoCard(card.id)'>{{card.description}}</div>
+        <div [ngClass]='card.selected ?  "bingo-item selected" : "bingo-item"' (click)='clickBingoCard($event, card.id, card.selected)'>{{card.description}}</div>
         <small>{{ card | userCount }}</small>
     </div>
 </div>
