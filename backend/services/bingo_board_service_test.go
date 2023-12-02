@@ -10,7 +10,7 @@ import (
 func TestFindBingoBoard(t *testing.T) {
 	t.Run("test normal case controller find bingo board", func(t *testing.T) {
 		bingoBoardRepoMock := new(mocks.BingoBoardRepoMock)
-		bingoBoardRepoMock.On("FindBingoBoard", mock.AnythingOfType("string")).Return(nil)
+		bingoBoardRepoMock.On("GetBingoBoard", mock.AnythingOfType("string")).Return(nil)
 
 		bingoBoardService := NewBingoBoardService(bingoBoardRepoMock)
 		bingoBoard, _ := bingoBoardService.FindBingoBoard("test")

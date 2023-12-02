@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/Blarc/advent-of-code-bingo/api"
 	"github.com/Blarc/advent-of-code-bingo/auth"
-	"github.com/Blarc/advent-of-code-bingo/controllers"
 	_ "github.com/Blarc/advent-of-code-bingo/docs"
 	"github.com/Blarc/advent-of-code-bingo/utils"
 	"github.com/gin-contrib/static"
@@ -111,25 +111,25 @@ func (app *App) start() {
 		ctx.SetCookie(auth.TokenCookieId, "", -1, "/", ctx.Request.Host, true, false)
 		ctx.Redirect(http.StatusTemporaryRedirect, "/")
 	})
-	apiPublic.GET("/bingoCards", controllers.FindBingoCards)
+	apiPublic.GET("/bingoCards", api.FindBingoCards)
 
 	// Protected API
 	protected := app.router.Group("/api/v1")
 	protected.Use(auth.Verifier())
-	protected.GET("/me", controllers.FindMe)
-	protected.POST("/me/bingoCard/:id", controllers.ClickBingoCard)
+	protected.GET("/me", api.FindMe)
+	protected.POST("/me/bingoCard/:id", api.ClickBingoCard)
 
 	// Bingo Card
-	protected.POST("/bingoCards", controllers.CreateBingoCard)
+	protected.POST("/bingoCards", api.CreateBingoCard)
 
 	// Bingo Board
 	bingoBoards := protected.Group("/bingoBoard")
-	bingoBoards.GET("/:id", controllers.FindBingoBoard)
-	bingoBoards.POST("/", controllers.CreateBingoBoard)
-	bingoBoards.DELETE("/:id", controllers.DeleteBingoBoard)
-	bingoBoards.POST("/:id/join", controllers.JoinBingoBoard)
-	bingoBoards.DELETE("/:id/leave", controllers.LeaveBingoBoard)
-	bingoBoards.PUT("/:id/addBingoCard", controllers.AddBingoCard)
+	bingoBoards.GET("/:id", api.FindBingoBoard)
+	bingoBoards.POST("/", api.CreateBingoBoard)
+	bingoBoards.DELETE("/:id", api.DeleteBingoBoard)
+	bingoBoards.POST("/:id/join", api.JoinBingoBoard)
+	bingoBoards.DELETE("/:id/leave", api.LeaveBingoBoard)
+	bingoBoards.PUT("/:id/addBingoCard", api.AddBingoCard)
 
 	log.Fatal(app.router.Run())
 }

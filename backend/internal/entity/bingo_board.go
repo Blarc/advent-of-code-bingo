@@ -1,4 +1,4 @@
-package models
+package entity
 
 import (
 	"github.com/google/uuid"
@@ -38,8 +38,4 @@ func (b *BingoBoard) MapToDto() BingoBoardDto {
 		BingoCards: bingoCardDtos,
 		Users:      usersDtos,
 	}
-}
-
-type BingoBoardId struct {
-	ID string `uri:"id" binding:"required"`
 }

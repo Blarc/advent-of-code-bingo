@@ -3,10 +3,23 @@ package controllers
 import (
 	"github.com/Blarc/advent-of-code-bingo/models"
 	"github.com/Blarc/advent-of-code-bingo/repo"
+	"github.com/Blarc/advent-of-code-bingo/services"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 )
+
+type BingoBoardController struct {
+	bingoBoardService services.BingoBoardService
+}
+
+func NewBingoBoardController(
+	bingoBoardService services.BingoBoardService,
+) BingoBoardController {
+	return BingoBoardController{
+		bingoBoardService: bingoBoardService,
+	}
+}
 
 // CreateBingoBoard godoc
 // @Summary Create bingo board.
@@ -17,7 +30,7 @@ import (
 // @Success 200 {object} models.UserDto
 // @Router /bingoBoard [post]
 // @Security Token
-func CreateBingoBoard(c *gin.Context) {
+func (h *BingoBoardController) CreateBingoBoard(c *gin.Context) {
 	var user = c.MustGet("user").(models.User)
 	if user.PersonalBingoBoard != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "You already have a personal bingo board"})
@@ -57,7 +70,7 @@ func CreateBingoBoard(c *gin.Context) {
 // @Router /bingoBoard/{id} [get]
 // @Param id path string true "Bingo Board ID"
 // @Security Token
-func FindBingoBoard(c *gin.Context) {
+func (h *BingoBoardController) FindBingoBoard(c *gin.Context) {
 	var bingoBoardId models.BingoBoardId
 	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
 		log.Println(err.Error())
@@ -95,7 +108,7 @@ func FindBingoBoard(c *gin.Context) {
 // @Success 200 {object} models.UserDto
 // @Router /bingoBoard/{id} [delete]
 // @Security Token
-func DeleteBingoBoard(c *gin.Context) {
+func (h *BingoBoardController) DeleteBingoBoard(c *gin.Context) {
 
 	var user = c.MustGet("user").(models.User)
 	if user.PersonalBingoBoard == nil {
@@ -130,7 +143,7 @@ func DeleteBingoBoard(c *gin.Context) {
 // @Router /bingoBoard/{id}/join [post]
 // @Param id path string true "Bingo Board ID"
 // @Security Token
-func JoinBingoBoard(c *gin.Context) {
+func (h *BingoBoardController) JoinBingoBoard(c *gin.Context) {
 	var bingoBoardId models.BingoBoardId
 	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
 		log.Println(err.Error())
@@ -165,7 +178,7 @@ func JoinBingoBoard(c *gin.Context) {
 // @Router /bingoBoard/{id}/leave [delete]
 // @Param id path string true "Bingo Board ID"
 // @Security Token
-func LeaveBingoBoard(c *gin.Context) {
+func (h *BingoBoardController) LeaveBingoBoard(c *gin.Context) {
 	var bingoBoardId models.BingoBoardId
 	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
 		log.Println(err.Error())
@@ -206,7 +219,7 @@ func LeaveBingoBoard(c *gin.Context) {
 // @Param id path string true "Bingo Board ID"
 // @Param data body models.BingoCardId true "Bingo Card UUID"
 // @Security Token
-func AddBingoCard(c *gin.Context) {
+func (h *BingoBoardController) AddBingoCard(c *gin.Context) {
 	var bingoBoardId models.BingoBoardId
 	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
 		log.Println(err.Error())
@@ -271,7 +284,7 @@ func AddBingoCard(c *gin.Context) {
 // @Param id path string true "Bingo Board ID"
 // @Param data body models.BingoCardId true "Bingo Card UUID"
 // @Security Token
-func RemoveBingoCard(c *gin.Context) {
+func (h *BingoBoardController) RemoveBingoCard(c *gin.Context) {
 	var bingoBoardId models.BingoBoardId
 	if err := c.ShouldBindUri(&bingoBoardId); err != nil {
 		log.Println(err.Error())

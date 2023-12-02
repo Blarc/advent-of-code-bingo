@@ -1,13 +1,6 @@
 package main
 
-import (
-	"github.com/Blarc/advent-of-code-bingo/docs"
-	"github.com/Blarc/advent-of-code-bingo/models"
-	"github.com/Blarc/advent-of-code-bingo/utils"
-	"github.com/joho/godotenv"
-	"log"
-	"os"
-)
+import "github.com/Blarc/advent-of-code-bingo/lib"
 
 // @title           Advent of Code Bingo API
 // @version         1.0
@@ -24,15 +17,18 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	log.SetOutput(os.Stdout)
+	//log.SetOutput(os.Stdout)
+	//
+	//if err := godotenv.Load(); err != nil {
+	//	log.Println("No .env file found.")
+	//}
+	//
+	//docs.SwaggerInfo.Host = utils.GetEnvVariable("HOST")
+	//docs.SwaggerInfo.Schemes = []string{utils.GetEnvVariable("SCHEME")}
+	//models.ConnectDatabase()
+	//
+	//newApp().start()
 
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found.")
-	}
+	logger := lib.GetLogger()
 
-	docs.SwaggerInfo.Host = utils.GetEnvVariable("HOST")
-	docs.SwaggerInfo.Schemes = []string{utils.GetEnvVariable("SCHEME")}
-	models.ConnectDatabase()
-
-	newApp().start()
 }
