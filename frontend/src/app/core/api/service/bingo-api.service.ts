@@ -60,11 +60,11 @@ export class BingoApiService {
     public getAllBingoCards(): Observable<BingoCardDto[]> {
         const headers = this.getAuthHeaders();
         const httpOptions = headers ? {headers} : undefined;
-        return this.http.get<BingoCardDto[]>(`${this.baseUrl}/bingoCards`, httpOptions);
+        return this.http.get<BingoCardDto[]>(`${this.baseUrl}/bingoCard`, httpOptions);
     }
 
     public createBingoCard(newBingoCard: CreateBingoCardDto): Observable<BingoCardDto> {
-        return this.http.post<BingoCardDto>(`${this.baseUrl}/bingoCards`, newBingoCard);
+        return this.http.post<BingoCardDto>(`${this.baseUrl}/bingoCard`, newBingoCard);
     }
 
     public getUserInfo(): Observable<UserDto> {

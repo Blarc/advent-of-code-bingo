@@ -8,10 +8,11 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App  `yaml:"app"`
-		HTTP `yaml:"http"`
-		Log  `yaml:"logger"`
-		PG   `yaml:"postgres"`
+		App   `yaml:"app"`
+		HTTP  `yaml:"http"`
+		Log   `yaml:"logger"`
+		PG    `yaml:"postgres"`
+		OAuth `yaml:"oauth"`
 	}
 
 	// App -.
@@ -32,12 +33,25 @@ type (
 
 	// PG -.
 	PG struct {
-		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
-		PgUser  string `env-required:"true" env:"PG_USER"`
-		PgPass  string `env-required:"true" env:"PG_PASS"`
-		PgHost  string `env-required:"true" env:"PG_HOST"`
-		PgName  string `env-required:"true" env:"PG_NAME"`
-		PgPort  string `env-required:"true" env:"PG_PORT"`
+		PgUser string `env-required:"true" yaml:"user" env:"PG_USER"`
+		PgPass string `env-required:"true" yaml:"password" env:"PG_PASS"`
+		PgHost string `env-required:"true" yaml:"host" env:"PG_HOST"`
+		PgName string `env-required:"true" yaml:"name" env:"PG_NAME"`
+		PgPort string `env-required:"true" yaml:"port" env:"PG_PORT"`
+	}
+
+	// OAuth -.
+	OAuth struct {
+		GithubClientId     string `env-required:"true" yaml:"github_client_id" env:"GITHUB_CLIENT_ID"`
+		GithubClientSecret string `env-required:"true" yaml:"github_client_secret" env:"GITHUB_CLIENT_SECRET"`
+		GithubRedirectUri  string `env-required:"true" yaml:"github_redirect_uri" env:"GITHUB_REDIRECT_URI"`
+		GoogleClientId     string `env-required:"true" yaml:"google_client_id" env:"GOOGLE_CLIENT_ID"`
+		GoogleClientSecret string `env-required:"true" yaml:"google_client_secret" env:"GOOGLE_CLIENT_SECRET"`
+		GoogleRedirectUri  string `env-required:"true" yaml:"google_redirect_uri" env:"GOOGLE_REDIRECT_URI"`
+		RedditClientId     string `env-required:"true" yaml:"reddit_client_id" env:"REDDIT_CLIENT_ID"`
+		RedditClientSecret string `env-required:"true" yaml:"reddit_client_secret" env:"REDDIT_CLIENT_SECRET"`
+		RedditRedirectUri  string `env-required:"true" yaml:"reddit_redirect_uri" env:"REDDIT_REDIRECT_URI"`
+		TokenEncryptSecret string `env-required:"true" yaml:"token_encrypt_secret" env:"TOKEN_ENCRYPT_SECRET"`
 	}
 )
 

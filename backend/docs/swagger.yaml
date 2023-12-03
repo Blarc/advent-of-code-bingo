@@ -1,17 +1,10 @@
 basePath: /api/v1
 definitions:
-  controllers.CreateBingoCardDto:
-    properties:
-      description:
-        type: string
-    required:
-    - description
-    type: object
-  models.BingoBoardDto:
+  entity.BingoBoardDto:
     properties:
       bingo_cards:
         items:
-          $ref: '#/definitions/models.BingoCardDto'
+          $ref: '#/definitions/entity.BingoCardDto'
         type: array
       name:
         type: string
@@ -19,10 +12,10 @@ definitions:
         type: string
       users:
         items:
-          $ref: '#/definitions/models.UserDto'
+          $ref: '#/definitions/entity.UserDto'
         type: array
     type: object
-  models.BingoCardDto:
+  entity.BingoCardDto:
     properties:
       description:
         type: string
@@ -31,42 +24,37 @@ definitions:
       user_count:
         type: integer
     type: object
-  models.BingoCardId:
-    properties:
-      id:
-        type: string
-    required:
-    - id
-    type: object
-  models.UserDto:
+  entity.UserDto:
     properties:
       avatar_url:
         type: string
       bingo_boards:
         items:
-          $ref: '#/definitions/models.BingoBoardDto'
+          $ref: '#/definitions/entity.BingoBoardDto'
         type: array
       bingo_cards:
         items:
-          $ref: '#/definitions/models.BingoCardDto'
+          $ref: '#/definitions/entity.BingoCardDto'
         type: array
       github_url:
         type: string
       name:
         type: string
       personal_bingo_board:
-        $ref: '#/definitions/models.BingoBoardDto'
+        $ref: '#/definitions/entity.BingoBoardDto'
       reddit_url:
         type: string
     type: object
+  v1.response:
+    properties:
+      error:
+        example: message
+        type: string
+    type: object
+host: localhost:8080
 info:
-  contact:
-    name: Jakob Maležič
-    url: https://github.com/Blarc
+  contact: {}
   description: Advent of Code Bingo API in Go using Gin framework.
-  license:
-    name: GNU General Public License v3.0
-    url: https://www.gnu.org/licenses/gpl-3.0.html
   title: Advent of Code Bingo API
   version: "1.0"
 paths:
@@ -81,7 +69,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserDto'
+            $ref: '#/definitions/entity.UserDto'
       security:
       - Token: []
       summary: Create bingo board.
@@ -98,7 +86,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserDto'
+            $ref: '#/definitions/entity.UserDto'
       security:
       - Token: []
       summary: Delete bingo board.
@@ -120,39 +108,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.BingoBoardDto'
+            $ref: '#/definitions/entity.BingoBoardDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
       security:
       - Token: []
       summary: Get bingo board.
-      tags:
-      - Bingo Board
-  /bingoBoard/{id}/addBingoCard:
-    put:
-      consumes:
-      - application/json
-      description: Add a bingo card to a bingo board.
-      parameters:
-      - description: Bingo Board ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Bingo Card UUID
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/models.BingoCardId'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.BingoBoardDto'
-      security:
-      - Token: []
-      summary: Add bingo card.
       tags:
       - Bingo Board
   /bingoBoard/{id}/join:
@@ -172,7 +135,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserDto'
+            $ref: '#/definitions/entity.UserDto'
       security:
       - Token: []
       summary: Join bingo board.
@@ -195,42 +158,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserDto'
+            $ref: '#/definitions/entity.UserDto'
       security:
       - Token: []
       summary: Leave bingo board.
       tags:
       - Bingo Board
-  /bingoBoard/{id}/removeBingoCard:
-    put:
-      consumes:
-      - application/json
-      description: Remove a bingo card from a bingo board.
-      parameters:
-      - description: Bingo Board ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Bingo Card UUID
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/models.BingoCardId'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.BingoBoardDto'
-      security:
-      - Token: []
-      summary: Remove bingo card.
-      tags:
-      - Bingo Board
-  /bingoCards:
+  /bingoCard:
     get:
       consumes:
       - application/json
@@ -242,32 +176,26 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.BingoCardDto'
+              $ref: '#/definitions/entity.BingoCardDto'
             type: array
       summary: Get all bingo cards.
       tags:
       - Bingo Card
+  /bingoCard/{id}/click:
     post:
       consumes:
       - application/json
-      description: Create a bingo card.
-      parameters:
-      - description: Bingo Card
-        in: body
-        name: bingoCard
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.CreateBingoCardDto'
+      description: Add or remove bingo card from user.
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.BingoCardDto'
-      summary: Create a bingo card.
+            $ref: '#/definitions/entity.UserDto'
+      summary: Click bingo card.
       tags:
-      - Bingo Card
+      - User
   /me:
     get:
       consumes:
@@ -279,33 +207,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserDto'
+            $ref: '#/definitions/entity.UserDto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.response'
       security:
       - Token: []
       summary: Get user information.
-      tags:
-      - User
-  /me/bingoCard/{id}:
-    post:
-      consumes:
-      - application/json
-      description: Add or remove bingo card from user.
-      parameters:
-      - description: Bingo Card ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.UserDto'
-      security:
-      - Token: []
-      summary: Click bingo card.
       tags:
       - User
 securityDefinitions:

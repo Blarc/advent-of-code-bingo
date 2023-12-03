@@ -10,8 +10,8 @@ type BingoBoardUseCase struct {
 	bingoCardRepo  BingoCardRepo
 }
 
-func New(bingoBoardRepo BingoBoardRepo, bingoCardRepo BingoCardRepo) BingoBoardUseCase {
-	return BingoBoardUseCase{bingoBoardRepo, bingoCardRepo}
+func NewBingoBoardUseCase(bingoBoardRepo BingoBoardRepo, bingoCardRepo BingoCardRepo) *BingoBoardUseCase {
+	return &BingoBoardUseCase{bingoBoardRepo, bingoCardRepo}
 }
 
 func (u *BingoBoardUseCase) GetBingoBoard(shortUuid string) (*entity.BingoBoardDto, error) {
@@ -31,10 +31,10 @@ func (u *BingoBoardUseCase) GetBingoBoard(shortUuid string) (*entity.BingoBoardD
 	return &bingoBoardDto, nil
 }
 
-func (u *BingoBoardUseCase) CreatePersonalBingoBoard(user *entity.User) (*entity.BingoBoardDto, error) {
+func (u *BingoBoardUseCase) CreatePersonalBingoBoard(user *entity.User) error {
 	bingoCards, err := u.bingoCardRepo.GetBingoCards()
 	if err != nil {
-		return nil, fmt.Errorf("BingoBoardUseCase - CreatePersonalBingoBoard - u.bingoCardRepo.GetBingoCards: %w", err)
+		return fmt.Errorf("BingoBoardUseCase - CreatePersonalBingoBoard - u.bingoCardRepo.GetBingoCards: %w", err)
 	}
 
 	bingoBoard := &entity.BingoBoard{
@@ -46,11 +46,10 @@ func (u *BingoBoardUseCase) CreatePersonalBingoBoard(user *entity.User) (*entity
 
 	bingoBoard, err = u.bingoBoardRepo.CreatePersonalBingoBoard(bingoBoard)
 	if err != nil {
-		return nil, fmt.Errorf("BingoBoardUseCase - CreatePersonalBingoBoard - u.bingoBoardRepo.CreatePersonalBingoBoard: %w", err)
+		return fmt.Errorf("BingoBoardUseCase - CreatePersonalBingoBoard - u.bingoBoardRepo.CreatePersonalBingoBoard: %w", err)
 	}
 
-	bingoBoardDto := bingoBoard.MapToDto()
-	return &bingoBoardDto, nil
+	return nil
 
 }
 
@@ -62,18 +61,27 @@ func (u *BingoBoardUseCase) DeletePersonalBingoBoard(user *entity.User) error {
 	return nil
 }
 
-func (u *BingoBoardUseCase) JoinBingoBoard(user *entity.User, shortUuid string) (*entity.User, error) {
+func (u *BingoBoardUseCase) JoinBingoBoard(user *entity.User, shortUuid string) error {
 	err := u.bingoBoardRepo.AddUserToBingoBoard(user, shortUuid)
 	if err != nil {
-		return nil, fmt.Errorf("BingoBoardUseCase - JoinBingoBoard - u.bingoBoardRepo.AddUserToBingoBoard: %w", err)
+		return fmt.Errorf("BingoBoardUseCase - JoinBingoBoard - u.bingoBoardRepo.AddUserToBingoBoard: %w", err)
 	}
-	return user, nil
+	return nil
 }
 
-func (u *BingoBoardUseCase) LeaveBingoBoard(user *entity.User, shortUuid string) (*entity.User, error) {
-	err := u.bingoBoardRepo.RemoveUserFromBingoBoard(user, shortUuid)
+func (u *BingoBoardUseCase) LeaveBingoBoard(user *entity.User, shortUuid string) error {
+	bingoBoard, err := u.bingoBoardRepo.GetBingoBoard(shortUuid)
 	if err != nil {
-		return nil, fmt.Errorf("BingoBoardUseCase - LeaveBingoBoard - u.bingoBoardRepo.RemoveUserFromBingoBoard: %w", err)
+		return fmt.Errorf("BingoBoardUseCase - LeaveBingoBoard - u.bingoBoardRepo.GetBingoBoard: %w", err)
 	}
-	return user, nil
+
+	if bingoBoard.OwnerId == user.ID {
+		return fmt.Errorf("BingoBoardUseCase - LeaveBingoBoard - user is owner of bingo board")
+	}
+
+	err = u.bingoBoardRepo.RemoveUserFromBingoBoard(user, shortUuid)
+	if err != nil {
+		return fmt.Errorf("BingoBoardUseCase - LeaveBingoBoard - u.bingoBoardRepo.RemoveUserFromBingoBoard: %w", err)
+	}
+	return nil
 }

@@ -1,0 +1,9 @@
+app:
+  name: 'Advent of Code Bingo'
+  version: '1.0.0'
+
+http:
+  port: '8080'
+
+logger:
+  log_level: 'debug'

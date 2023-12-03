@@ -4,14 +4,28 @@ import (
 	"fmt"
 	"github.com/Blarc/advent-of-code-bingo/internal/entity"
 	"github.com/Blarc/advent-of-code-bingo/pkg/postgres"
+	"github.com/google/uuid"
 )
 
 type BingoCardRepo struct {
 	*postgres.Postgres
 }
 
-func New(pg *postgres.Postgres) *BingoCardRepo {
+func NewBingoCardRepo(pg *postgres.Postgres) *BingoCardRepo {
 	return &BingoCardRepo{pg}
+}
+
+func (b *BingoCardRepo) GetBingoCard(id uuid.UUID) (entity.BingoCard, error) {
+	var bingoCard entity.BingoCard
+
+	result := b.DB.
+		First(&bingoCard, id)
+
+	if result.Error != nil {
+		return entity.BingoCard{}, fmt.Errorf("BingoCardRepo - GetBingoCard - b.DB.First: %w", result.Error)
+	}
+
+	return bingoCard, nil
 }
 
 func (b *BingoCardRepo) GetBingoCards() ([]entity.BingoCard, error) {
@@ -44,4 +58,30 @@ func (b *BingoCardRepo) GetBingoCardsWithUserCount() ([]entity.BingoCardDto, err
 	}
 
 	return bingoCardsDto, nil
+}
+
+func (b *BingoCardRepo) AddBingoCardToUser(user *entity.User, bingoCard *entity.BingoCard) error {
+	result := b.DB.
+		Model(user).
+		Association("BingoCards").
+		Append(bingoCard)
+
+	if result.Error != nil {
+		return fmt.Errorf("BingoCardRepo - AddBingoCardToUser - b.DB.Model.Association.Append: %w", result.Error)
+	}
+
+	return nil
+}
+
+func (b *BingoCardRepo) RemoveBingoCardFromUser(user *entity.User, bingoCard *entity.BingoCard) error {
+	result := b.DB.
+		Model(user).
+		Association("BingoCards").
+		Delete(bingoCard)
+
+	if result.Error != nil {
+		return fmt.Errorf("BingoCardRepo - RemoveBingoCardFromUser - b.DB.Model.Association.Delete: %w", result.Error)
+	}
+
+	return nil
 }

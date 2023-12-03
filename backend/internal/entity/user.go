@@ -20,6 +20,15 @@ type User struct {
 	PersonalBingoBoard *BingoBoard  `gorm:"foreignKey:OwnerId" json:"personal_bingo_board"`
 }
 
+func (u *User) HasBingoCard(bingoCard *BingoCard) bool {
+	for _, card := range u.BingoCards {
+		if card.ID == bingoCard.ID {
+			return true
+		}
+	}
+	return false
+}
+
 type UserDto struct {
 	Name               string          `json:"name"`
 	AvatarURL          string          `json:"avatar_url"`

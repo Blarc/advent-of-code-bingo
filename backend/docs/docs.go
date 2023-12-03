@@ -9,14 +9,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {
-            "name": "Jakob Maležič",
-            "url": "https://github.com/Blarc"
-        },
-        "license": {
-            "name": "GNU General Public License v3.0",
-            "url": "https://www.gnu.org/licenses/gpl-3.0.html"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -44,7 +37,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UserDto"
+                            "$ref": "#/definitions/entity.UserDto"
                         }
                     }
                 }
@@ -81,7 +74,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.BingoBoardDto"
+                            "$ref": "#/definitions/entity.BingoBoardDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
                         }
                     }
                 }
@@ -107,53 +106,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UserDto"
-                        }
-                    }
-                }
-            }
-        },
-        "/bingoBoard/{id}/addBingoCard": {
-            "put": {
-                "security": [
-                    {
-                        "Token": []
-                    }
-                ],
-                "description": "Add a bingo card to a bingo board.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Bingo Board"
-                ],
-                "summary": "Add bingo card.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bingo Board ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Bingo Card UUID",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.BingoCardId"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.BingoBoardDto"
+                            "$ref": "#/definitions/entity.UserDto"
                         }
                     }
                 }
@@ -190,7 +143,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UserDto"
+                            "$ref": "#/definitions/entity.UserDto"
                         }
                     }
                 }
@@ -227,59 +180,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UserDto"
+                            "$ref": "#/definitions/entity.UserDto"
                         }
                     }
                 }
             }
         },
-        "/bingoBoard/{id}/removeBingoCard": {
-            "put": {
-                "security": [
-                    {
-                        "Token": []
-                    }
-                ],
-                "description": "Remove a bingo card from a bingo board.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Bingo Board"
-                ],
-                "summary": "Remove bingo card.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bingo Board ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Bingo Card UUID",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.BingoCardId"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.BingoBoardDto"
-                        }
-                    }
-                }
-            }
-        },
-        "/bingoCards": {
+        "/bingoCard": {
             "get": {
                 "description": "Get all bingo cards.",
                 "consumes": [
@@ -298,14 +205,16 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.BingoCardDto"
+                                "$ref": "#/definitions/entity.BingoCardDto"
                             }
                         }
                     }
                 }
-            },
+            }
+        },
+        "/bingoCard/{id}/click": {
             "post": {
-                "description": "Create a bingo card.",
+                "description": "Add or remove bingo card from user.",
                 "consumes": [
                     "application/json"
                 ],
@@ -313,25 +222,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Bingo Card"
+                    "User"
                 ],
-                "summary": "Create a bingo card.",
-                "parameters": [
-                    {
-                        "description": "Bingo Card",
-                        "name": "bingoCard",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controllers.CreateBingoCardDto"
-                        }
-                    }
-                ],
+                "summary": "Click bingo card.",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.BingoCardDto"
+                            "$ref": "#/definitions/entity.UserDto"
                         }
                     }
                 }
@@ -359,44 +257,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UserDto"
+                            "$ref": "#/definitions/entity.UserDto"
                         }
-                    }
-                }
-            }
-        },
-        "/me/bingoCard/{id}": {
-            "post": {
-                "security": [
-                    {
-                        "Token": []
-                    }
-                ],
-                "description": "Add or remove bingo card from user.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Click bingo card.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bingo Card ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.UserDto"
+                            "$ref": "#/definitions/v1.response"
                         }
                     }
                 }
@@ -404,24 +271,13 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.CreateBingoCardDto": {
-            "type": "object",
-            "required": [
-                "description"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.BingoBoardDto": {
+        "entity.BingoBoardDto": {
             "type": "object",
             "properties": {
                 "bingo_cards": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.BingoCardDto"
+                        "$ref": "#/definitions/entity.BingoCardDto"
                     }
                 },
                 "name": {
@@ -433,12 +289,12 @@ const docTemplate = `{
                 "users": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.UserDto"
+                        "$ref": "#/definitions/entity.UserDto"
                     }
                 }
             }
         },
-        "models.BingoCardDto": {
+        "entity.BingoCardDto": {
             "type": "object",
             "properties": {
                 "description": {
@@ -452,18 +308,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.BingoCardId": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.UserDto": {
+        "entity.UserDto": {
             "type": "object",
             "properties": {
                 "avatar_url": {
@@ -472,13 +317,13 @@ const docTemplate = `{
                 "bingo_boards": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.BingoBoardDto"
+                        "$ref": "#/definitions/entity.BingoBoardDto"
                     }
                 },
                 "bingo_cards": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.BingoCardDto"
+                        "$ref": "#/definitions/entity.BingoCardDto"
                     }
                 },
                 "github_url": {
@@ -488,10 +333,19 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "personal_bingo_board": {
-                    "$ref": "#/definitions/models.BingoBoardDto"
+                    "$ref": "#/definitions/entity.BingoBoardDto"
                 },
                 "reddit_url": {
                     "type": "string"
+                }
+            }
+        },
+        "v1.response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "message"
                 }
             }
         }
@@ -508,7 +362,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "",
+	Host:             "localhost:8080",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Advent of Code Bingo API",

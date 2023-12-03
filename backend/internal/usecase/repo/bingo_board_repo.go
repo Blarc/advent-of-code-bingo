@@ -10,7 +10,7 @@ type BingoBoardRepo struct {
 	*postgres.Postgres
 }
 
-func New(pg *postgres.Postgres) *BingoBoardRepo {
+func NewBingoBoardRepo(pg *postgres.Postgres) *BingoBoardRepo {
 	return &BingoBoardRepo{pg}
 }
 
